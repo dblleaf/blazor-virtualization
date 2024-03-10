@@ -1,0 +1,13 @@
+{
+  "name": "blazor.virtual.waterfall",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@microsoft/dotnet-js-interop": "^8.0.0"
+  }
+}

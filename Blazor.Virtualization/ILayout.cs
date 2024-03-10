@@ -1,6 +1,8 @@
 ﻿namespace Blazor.Virtualization;
 
-public interface ILayout
+using Microsoft.AspNetCore.Components;
+
+public interface ILayout : IComponent
 {
     float Spacing { get; set; }
 

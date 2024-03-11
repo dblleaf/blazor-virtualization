@@ -5,6 +5,9 @@
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
-<Component1 Panel="new TestPanel()">
-</Component1>
-
+<Virtualize Items="items">
+    <div style="width:200px;height:120px;display:inline-block;margin-right:8px;background:#AACCEE;"></div>
+</Virtualize>
+@code {
+    private List<int> items = Enumerable.Range(0, 500).ToList();
+}

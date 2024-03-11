@@ -1,5 +1,9 @@
-﻿<h3>WaterfallLayout</h3>
+﻿@typeparam TItem
 
-@code {
-
+ @if (this.RenderItems?.Count > 0)
+{
+    @foreach (var item in this.RenderItems)
+    {
+        <div class="item" style="@(item.Style)">@(this.VirtualList?.ItemTemplate(item.Data))</div>
+    }
 }

@@ -3,6 +3,7 @@
 using Blazor.Virtualization.EventArgs;
 using Microsoft.AspNetCore.Components;
 using System;
+using System.Collections.Generic;
 
 public interface IVirtualList<TItem>
 {
@@ -17,4 +18,6 @@ public interface IVirtualList<TItem>
     EventHandler<SpacerVisibleAegs> OnSpacerBeforeVisible { get; set; }
 
     EventHandler<SpacerVisibleAegs> OnSpacerAfterVisible { get; set; }
+
+    public IEnumerable<TItem> Items { get; set; }
 }

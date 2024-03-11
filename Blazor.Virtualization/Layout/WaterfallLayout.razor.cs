@@ -36,6 +36,9 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 
     private List<PositionItem<TItem>> Items { get; } = [];
 
+    private float scrollTop;
+    private float clientHeight;
+
     protected override void OnParametersSet()
     {
         if (this.VirtualList != null)
@@ -53,15 +56,11 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         this.columnWidth = this.GetColumnWidth();
         this.ReLayout();
 
-        // this.UpdateItems(this.VirtualList.ItemTemplate);
-        // if (!args.First)
-        // {
-        //    this.Render(
-        //        this.scrollTop,
-        //        this.clientHeight,
-        //        this.loadMoreInforTask);
-        //    this.StateHasChanged();
-        // }
+        this.UpdateItems(this.VirtualList.Items);
+        if (!args.First)
+        {
+            this.Render();
+        }
     }
 
     private PositionItem<TItem> ToVirtualWaterfallItem(TItem item)
@@ -86,10 +85,7 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         this.columnsTop = Enumerable.Range(0, this.columnCount).Select(_ => 0f).ToList();
     }
 
-    private void Render(
-        float scrollTop,
-        float clientHeight,
-        ValueTask? loadMoreTask = null)
+    private void Render()
     {
         if (!(this.Items?.Count > 0))
         {
@@ -99,7 +95,7 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
                 if (task.IsCompleted)
                 {
                     this.height = this.columnsTop.Max();
-                    this.Render(scrollTop, clientHeight, loadMoreTask);
+                    this.Render();
                 }
             }
 
@@ -108,8 +104,8 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 
         var startIndex = 0;
         var endIndex = this.Items.Count;
-        var min = this.Items.Where(o => o.Top < scrollTop - clientHeight).LastOrDefault();
-        var max = this.Items.Where(o => o.Top + o.Height > scrollTop + clientHeight * 2).FirstOrDefault();
+        var min = this.Items.Where(o => o.Top < this.scrollTop - this.clientHeight).LastOrDefault();
+        var max = this.Items.Where(o => o.Top + o.Height > this.scrollTop + this.clientHeight * 2).FirstOrDefault();
         if (min != null)
         {
             startIndex = this.Items.IndexOf(min);
@@ -128,7 +124,7 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
                 if (task.IsCompleted)
                 {
                     this.height = this.columnsTop.Max();
-                    this.Render(scrollTop, clientHeight, loadMoreTask);
+                    this.Render();
                 }
             }
         }
@@ -143,6 +139,8 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
             this.spacerBeforeHeight = this.RenderItems.GroupBy(o => o.Left, o => o.Top).Select(o => o.Min()).Max();
             this.spacerAfterTop = this.RenderItems.GroupBy(o => o.Left, o => o.Top + o.Height).Select(o => o.Max()).Min();
         }
+
+        this.StateHasChanged();
     }
 
     private void UpdateItems(IEnumerable<TItem> itemsSource)

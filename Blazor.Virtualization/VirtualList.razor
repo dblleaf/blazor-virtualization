@@ -12,7 +12,7 @@
         <RepeaterLayout VirtualList="this"></RepeaterLayout>
     }
 
-    @if (!(this.items?.Count > 0))
+    @if (!(this.Items?.Count() > 0))
     {
         @if (this.EmptyTemplate != null)
         {

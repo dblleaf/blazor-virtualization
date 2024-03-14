@@ -1,23 +1,29 @@
 ﻿namespace Blazor.Virtualization;
 
-using Blazor.Virtualization.EventArgs;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public interface IVirtualList<TItem>
 {
-    [Parameter]
     RenderFragment<TItem> ItemTemplate { get; set; }
 
-    [Parameter]
     RenderFragment EmptyTemplate { get; set; }
+
+    Func<Task<IEnumerable<TItem>>> ItemsProvider { get; set; }
 
     EventHandler<ContentWidthChangeArgs> OnContentWidthChange { get; set; }
 
-    EventHandler<SpacerVisibleAegs> OnSpacerBeforeVisible { get; set; }
+    EventHandler<SpacerVisibleArgs> OnSpacerBeforeVisible { get; set; }
 
-    EventHandler<SpacerVisibleAegs> OnSpacerAfterVisible { get; set; }
+    EventHandler<SpacerVisibleArgs> OnSpacerAfterVisible { get; set; }
 
-    public IEnumerable<TItem> Items { get; set; }
+    EventHandler<EventArgs> OnRefresh { get; set; }
+
+    IEnumerable<TItem> Items { get; set; }
+
+    bool NoMore { get; set; }
+
+    Task ScrollTopAsync();
 }

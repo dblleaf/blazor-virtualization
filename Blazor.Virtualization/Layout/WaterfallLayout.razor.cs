@@ -44,6 +44,8 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         if (this.VirtualList != null)
         {
             this.VirtualList.OnContentWidthChange += this.OnContentWidthChange;
+            this.VirtualList.OnSpacerBeforeVisible += this.OnSpacerBeforeVisible;
+            this.VirtualList.OnSpacerAfterVisible += this.OnSpacerAfterVisible;
         }
 
         base.OnParametersSet();
@@ -63,7 +65,15 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         }
     }
 
-    private PositionItem<TItem> ToVirtualWaterfallItem(TItem item)
+    private void OnSpacerBeforeVisible(object sender, SpacerVisibleArgs args)
+    {
+    }
+
+    private void OnSpacerAfterVisible(object sender, SpacerVisibleArgs args)
+    {
+    }
+
+    private PositionItem<TItem> ToPositionItem(TItem item)
     {
         var colomnIdex = this.GetColumnIndex();
         var virtualWaterfallItem = new PositionItem<TItem>
@@ -89,14 +99,11 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
     {
         if (!(this.Items?.Count > 0))
         {
-            if (loadMoreTask != null)
+            var task = this.LoadDataAsync();
+            if (task.IsCompleted)
             {
-                var task = loadMoreTask.Value;
-                if (task.IsCompleted)
-                {
-                    this.height = this.columnsTop.Max();
-                    this.Render();
-                }
+                this.height = this.columnsTop.Max();
+                this.Render();
             }
 
             return;
@@ -118,9 +125,9 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 
         if (endIndex >= this.Items.Count - 5)
         {
-            if (loadMoreTask != null)
+            if (this.LoadDataAsync != null)
             {
-                var task = loadMoreTask.Value;
+                var task = this.LoadDataAsync();
                 if (task.IsCompleted)
                 {
                     this.height = this.columnsTop.Max();
@@ -158,9 +165,30 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         }
     }
 
+    private async ValueTask LoadDataAsync()
+    {
+        if (this.VirtualList.NoMore)
+        {
+            return;
+        }
+
+        var result = await this.VirtualList.ItemsProvider();
+        if (result != null)
+        {
+            foreach (var item in result)
+            {
+                this.AddVirtualWaterfallItem(item);
+            }
+        }
+        else
+        {
+            this.VirtualList.NoMore = true;
+        }
+    }
+
     private void AddVirtualWaterfallItem(TItem item)
     {
-        var virtualWaterfallItem = this.ToVirtualWaterfallItem(item);
+        var virtualWaterfallItem = this.ToPositionItem(item);
         this.Items.Add(virtualWaterfallItem);
     }
 

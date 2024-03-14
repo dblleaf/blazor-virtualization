@@ -1,4 +1,4 @@
-﻿namespace Blazor.Virtualization.EventArgs;
+﻿namespace Blazor.Virtualization;
 
 using System;
 

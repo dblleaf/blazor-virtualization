@@ -1,8 +1,8 @@
-﻿namespace Blazor.Virtualization.EventArgs;
+﻿namespace Blazor.Virtualization;
 
 using System;
 
-public class SpacerVisibleAegs : EventArgs
+public class SpacerVisibleArgs : EventArgs
 {
     public float ScrollTop { get; set; }
 

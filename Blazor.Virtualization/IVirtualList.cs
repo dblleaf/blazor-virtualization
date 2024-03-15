@@ -7,6 +7,12 @@ using System.Threading.Tasks;
 
 public interface IVirtualList<TItem>
 {
+    Style SpacerBeforeStyle { get; set; }
+
+    Style SpacerAfterStyle { get; set; }
+
+    public float Height { get; set; }
+
     RenderFragment<TItem> ItemTemplate { get; set; }
 
     RenderFragment EmptyTemplate { get; set; }
@@ -26,4 +32,6 @@ public interface IVirtualList<TItem>
     bool NoMore { get; set; }
 
     Task ScrollTopAsync();
+
+    Task InvokeStateChangedAsync();
 }

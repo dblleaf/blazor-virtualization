@@ -1,6 +1,5 @@
 ﻿namespace Blazor.Virtualization.Layout;
 
-using Blazor.Virtualization.EventArgs;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
@@ -15,7 +14,6 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
     private int columnCount;
     private float spacerBeforeHeight;
     private float spacerAfterTop;
-    private float height;
 
     [Parameter]
     public IVirtualList<TItem> VirtualList { get; set; }
@@ -36,6 +34,16 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 
     private List<PositionItem<TItem>> Items { get; } = [];
 
+    private Style SpacerBeforeStyle
+        => Style.Create()
+            .Add("top", "0")
+            .Add("height", $"{this.spacerBeforeHeight}px");
+
+    private Style SpacerAfterStyle
+        => Style.Create()
+            .Add("top", $"{this.spacerAfterTop}px")
+            .Add("bottom", "0");
+
     private float scrollTop;
     private float clientHeight;
 
@@ -51,7 +59,7 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         base.OnParametersSet();
     }
 
-    private void OnContentWidthChange(object sender, ContentWidthChangeArgs args)
+    private async void OnContentWidthChange(object sender, ContentWidthChangeArgs args)
     {
         this.contentWidth = args.Value;
         this.columnCount = this.CalColumnCount();
@@ -61,16 +69,20 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         this.UpdateItems(this.VirtualList.Items);
         if (!args.First)
         {
-            this.Render();
+            await this.RenderAsync();
         }
     }
 
     private void OnSpacerBeforeVisible(object sender, SpacerVisibleArgs args)
     {
+        this.scrollTop = args.ScrollTop;
+        this.clientHeight = args.ClientHeight;
     }
 
     private void OnSpacerAfterVisible(object sender, SpacerVisibleArgs args)
     {
+        this.scrollTop = args.ScrollTop;
+        this.clientHeight = args.ClientHeight;
     }
 
     private PositionItem<TItem> ToPositionItem(TItem item)
@@ -95,15 +107,14 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         this.columnsTop = Enumerable.Range(0, this.columnCount).Select(_ => 0f).ToList();
     }
 
-    private void Render()
+    private async Task RenderAsync()
     {
         if (!(this.Items?.Count > 0))
         {
             var task = this.LoadDataAsync();
             if (task.IsCompleted)
             {
-                this.height = this.columnsTop.Max();
-                this.Render();
+                await this.RenderAsync();
             }
 
             return;
@@ -127,12 +138,8 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         {
             if (this.LoadDataAsync != null)
             {
-                var task = this.LoadDataAsync();
-                if (task.IsCompleted)
-                {
-                    this.height = this.columnsTop.Max();
-                    this.Render();
-                }
+                await this.LoadDataAsync();
+                await this.RenderAsync();
             }
         }
 
@@ -147,7 +154,16 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
             this.spacerAfterTop = this.RenderItems.GroupBy(o => o.Left, o => o.Top + o.Height).Select(o => o.Max()).Min();
         }
 
+        await this.ChangeStateAsync();
+    }
+
+    private async Task ChangeStateAsync()
+    {
+        this.VirtualList.Height = this.columnsTop.Max();
+        this.VirtualList.SpacerBeforeStyle = this.SpacerBeforeStyle;
+        this.VirtualList.SpacerAfterStyle = this.SpacerAfterStyle;
         this.StateHasChanged();
+        await this.VirtualList.InvokeStateChangedAsync();
     }
 
     private void UpdateItems(IEnumerable<TItem> itemsSource)
@@ -160,8 +176,6 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
             {
                 this.AddVirtualWaterfallItem(item);
             }
-
-            this.height = this.columnsTop.Max();
         }
     }
 

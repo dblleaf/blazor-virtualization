@@ -1,6 +1,7 @@
 ﻿namespace Blazor.Virtualization;
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web.Virtualization;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -17,15 +18,17 @@ public interface IVirtualList<TItem>
 
     RenderFragment EmptyTemplate { get; set; }
 
-    Func<Task<IEnumerable<TItem>>> ItemsProvider { get; set; }
+    Func<ItemsProviderRequest, ValueTask<ItemsProviderResult<TItem>>> IncrementalItemsProvider { get; set; }
 
-    EventHandler<ContentWidthChangeArgs> OnContentWidthChange { get; set; }
+    Func<ContentWidthChangeArgs, Task> OnContentWidthChange { get; set; }
 
-    EventHandler<SpacerVisibleArgs> OnSpacerBeforeVisible { get; set; }
+    Func<SpacerVisibleArgs, Task> OnSpacerBeforeVisible { get; set; }
 
-    EventHandler<SpacerVisibleArgs> OnSpacerAfterVisible { get; set; }
+    Func<SpacerVisibleArgs, Task> OnSpacerAfterVisible { get; set; }
 
-    EventHandler<EventArgs> OnRefresh { get; set; }
+    Func<EventArgs, Task> OnRefresh { get; set; }
+
+    Func<LoadedMoreArgs<TItem>, Task> OnLoadedMore { get; set; }
 
     IEnumerable<TItem> Items { get; set; }
 

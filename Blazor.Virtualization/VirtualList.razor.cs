@@ -1,33 +1,15 @@
 ﻿namespace Blazor.Virtualization;
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 public partial class VirtualList<TItem> : IVirtualList<TItem>, IAsyncDisposable
 {
-    public EventHandler<ContentWidthChangeArgs> OnContentWidthChange { get; set; }
-
-    public EventHandler<SpacerVisibleArgs> OnSpacerBeforeVisible { get; set; }
-
-    public EventHandler<SpacerVisibleArgs> OnSpacerAfterVisible { get; set; }
-
-    public EventHandler<EventArgs> OnRefresh { get; set; }
-
-    [Parameter]
-    public RenderFragment<IVirtualList<TItem>> Layout { get; set; }
-
-    [Parameter]
-    public RenderFragment<TItem> ItemTemplate { get; set; }
-
-    [Parameter]
-    public RenderFragment EmptyTemplate { get; set; }
-
-    [Parameter]
-    public Func<Task<IEnumerable<TItem>>> ItemsProvider { get; set; }
-
     public IEnumerable<TItem> Items { get; set; }
 
     public bool NoMore { get; set; }
@@ -49,6 +31,7 @@ public partial class VirtualList<TItem> : IVirtualList<TItem>, IAsyncDisposable
     private ElementReference spaceBefore;
     private ElementReference spaceAfter;
     private List<TItem> items;
+    private Func<ItemsProviderRequest, ValueTask<ItemsProviderResult<TItem>>> itemsProvider = default!;
 
     public async Task ScrollTopAsync()
     {
@@ -74,5 +57,31 @@ public partial class VirtualList<TItem> : IVirtualList<TItem>, IAsyncDisposable
         }
 
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (this.IncrementalItemsProvider != null)
+        {
+            if (this.Items != null)
+            {
+                throw new InvalidOperationException(
+                    $"{this.GetType()} can only accept one item source from its parameters. " +
+                    $"Do not supply both '{nameof(this.Items)}' and '{nameof(this.IncrementalItemsProvider)}'.");
+            }
+        }
+        else if (this.Items != null)
+        {
+            this.itemsProvider = this.DefaultItemsProvider;
+        }
+
+        base.OnParametersSet();
+    }
+
+    private ValueTask<ItemsProviderResult<TItem>> DefaultItemsProvider(ItemsProviderRequest request)
+    {
+        return ValueTask.FromResult(new ItemsProviderResult<TItem>(
+           this.Items.Skip(request.StartIndex).Take(request.Count),
+           this.Items.Count()));
     }
 }

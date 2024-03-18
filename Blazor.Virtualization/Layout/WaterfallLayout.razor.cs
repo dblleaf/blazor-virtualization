@@ -52,14 +52,12 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         if (this.VirtualList != null)
         {
             this.VirtualList.OnContentWidthChange += this.OnContentWidthChange;
-            this.VirtualList.OnSpacerBeforeVisible += this.OnSpacerBeforeVisible;
-            this.VirtualList.OnSpacerAfterVisible += this.OnSpacerAfterVisible;
         }
 
         base.OnParametersSet();
     }
 
-    private async void OnContentWidthChange(object sender, ContentWidthChangeArgs args)
+    private async Task OnContentWidthChange(ContentWidthChangeArgs args)
     {
         this.contentWidth = args.Value;
         this.columnCount = this.CalColumnCount();
@@ -73,7 +71,7 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         }
     }
 
-    private void OnSpacerBeforeVisible(object sender, SpacerVisibleArgs args)
+    private void OnSpacerBeforeVisible(SpacerVisibleArgs args)
     {
         this.scrollTop = args.ScrollTop;
         this.clientHeight = args.ClientHeight;

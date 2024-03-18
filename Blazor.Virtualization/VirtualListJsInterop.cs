@@ -39,24 +39,6 @@ internal class VirtualListJsInterop : IAsyncDisposable
         await this.jsRuntime.InvokeVoidAsync($"{JsFunctionsPrefix}.scrollTo", this.dotNetObject, top);
     }
 
-    [JSInvokable]
-    public void OnContentWidthChange(float contentWidth, bool firstCallback = false)
-    {
-        this.owner.OnContentWidthChange(contentWidth, firstCallback);
-    }
-
-    [JSInvokable]
-    public void OnSpacerBeforeVisible(float scrollTop, float scrollHeight, float clientHeight)
-    {
-        this.owner.OnSpacerBeforeVisible(scrollTop, scrollHeight, clientHeight);
-    }
-
-    [JSInvokable]
-    public void OnSpacerAfterVisible(float scrollTop, float scrollHeight, float clientHeight)
-    {
-        this.owner.OnSpacerAfterVisible(scrollTop, scrollHeight, clientHeight);
-    }
-
     public async ValueTask DisposeAsync()
     {
         await this.jsRuntime.InvokeVoidAsync($"{JsFunctionsPrefix}.dispose", this.dotNetObject);
@@ -66,5 +48,23 @@ internal class VirtualListJsInterop : IAsyncDisposable
             var module = await this.moduleTask.Value;
             await module.DisposeAsync();
         }
+    }
+
+    [JSInvokable]
+    public Task OnContentWidthChange(float contentWidth, bool firstCallback = false)
+    {
+        return this.owner.ContentWidthChangeAsync(contentWidth, firstCallback);
+    }
+
+    [JSInvokable]
+    public Task OnSpacerBeforeVisible(float scrollTop, float clientHeight)
+    {
+        return this.owner.SpacerBeforeVisibleAsync(scrollTop, clientHeight);
+    }
+
+    [JSInvokable]
+    public Task OnSpacerAfterVisible(float scrollTop, float clientHeight)
+    {
+        return this.owner.SpacerAfterVisibleAsync(scrollTop, clientHeight);
     }
 }

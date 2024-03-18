@@ -1,39 +1,52 @@
 ﻿namespace Blazor.Virtualization;
 
-using System;
+using Microsoft.AspNetCore.Components.Web.Virtualization;
+using System.Threading.Tasks;
 
 public partial class VirtualList<TItem> : IVirtualListJsCallbacks
 {
-    public void ContentWidthChange(float contentWidth, bool firstCallback = false)
+    public async Task ContentWidthChangeAsync(float contentWidth, bool firstCallback = false)
     {
-        this.OnContentWidthChange?.Invoke(
-            this,
-            new ContentWidthChangeArgs
-            {
-                Value = contentWidth,
-                First = firstCallback,
-            });
+        await this.OnContentWidthChange?.Invoke(new ContentWidthChangeArgs
+        {
+            Value = contentWidth,
+            First = firstCallback,
+        });
     }
 
-    public void SpacerAfterVisible(float scrollTop, float clientHeight)
+    public async Task SpacerAfterVisibleAsync(float scrollTop, float clientHeight)
     {
-        this.OnSpacerAfterVisible?.Invoke(
-            this,
-            new SpacerVisibleArgs
+        await this.OnSpacerAfterVisible?.Invoke(new SpacerVisibleArgs
+        {
+            ScrollTop = scrollTop,
+            ClientHeight = clientHeight,
+        });
+
+        if (scrollTop + 100 > clientHeight)
+        {
+            var task = this.itemsProvider(new ItemsProviderRequest { });
+            if (task.IsCompleted)
             {
-                ScrollTop = scrollTop,
-                ClientHeight = clientHeight,
-            });
+                var items = task.Result.Items;
+                foreach (var item in items)
+                {
+                    this.items.Add(item);
+                }
+
+                await this.OnLoadedMore?.Invoke(new LoadedMoreArgs<TItem>
+                {
+                    Items = items,
+                });
+            }
+        }
     }
 
-    public void SpacerBeforeVisible(float scrollTop, float clientHeight)
+    public async Task SpacerBeforeVisibleAsync(float scrollTop, float clientHeight)
     {
-        this.OnSpacerBeforeVisible?.Invoke(
-            this,
-            new SpacerVisibleArgs
-            {
-                ScrollTop = scrollTop,
-                ClientHeight = clientHeight,
-            });
+        await this.OnSpacerBeforeVisible?.Invoke(new SpacerVisibleArgs
+        {
+            ScrollTop = scrollTop,
+            ClientHeight = clientHeight,
+        });
     }
 }

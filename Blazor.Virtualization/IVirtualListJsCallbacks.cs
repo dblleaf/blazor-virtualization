@@ -1,10 +1,12 @@
 ﻿namespace Blazor.Virtualization;
 
+using System.Threading.Tasks;
+
 internal interface IVirtualListJsCallbacks
 {
-    void ContentWidthChange(float contentWidth, bool firstCallback = false);
+    Task ContentWidthChangeAsync(float contentWidth, bool firstCallback = false);
 
-    void SpacerBeforeVisible(float scrollTop, float clientHeight);
+    Task SpacerBeforeVisibleAsync(float scrollTop, float clientHeight);
 
-    void SpacerAfterVisible(float scrollTop, float clientHeight);
+    Task SpacerAfterVisibleAsync(float scrollTop, float clientHeight);
 }

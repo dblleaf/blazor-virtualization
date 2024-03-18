@@ -179,23 +179,6 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 
     private async ValueTask LoadDataAsync()
     {
-        if (this.VirtualList.NoMore)
-        {
-            return;
-        }
-
-        var result = await this.VirtualList.ItemsProvider();
-        if (result != null)
-        {
-            foreach (var item in result)
-            {
-                this.AddVirtualWaterfallItem(item);
-            }
-        }
-        else
-        {
-            this.VirtualList.NoMore = true;
-        }
     }
 
     private void AddVirtualWaterfallItem(TItem item)

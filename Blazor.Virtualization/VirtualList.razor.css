@@ -12,12 +12,6 @@
   position: relative;
 }
 
-.virtual-list .item {
-  position: absolute;
-  left: 0;
-  top: 0;
-}
-
 .virtual-list .no-data {
   padding: 96px;
   text-align: center;

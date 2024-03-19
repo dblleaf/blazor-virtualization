@@ -1,6 +1,8 @@
 ﻿namespace Blazor.Virtualization;
 
 using Microsoft.AspNetCore.Components.Web.Virtualization;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 public partial class VirtualList<TItem> : IVirtualListJsCallbacks
@@ -24,10 +26,13 @@ public partial class VirtualList<TItem> : IVirtualListJsCallbacks
 
         if (scrollTop + 100 > clientHeight)
         {
-            var task = this.itemsProvider(new ItemsProviderRequest { });
-            if (task.IsCompleted)
+            var tokenSource = new CancellationTokenSource();
+            var token = tokenSource.Token;
+            var request = new ItemsProviderRequest(this.Items.Count(), this.Items.Count(), token);
+            var result = await this.IncrementalItemsProvider(request);
+            if (!token.IsCancellationRequested)
             {
-                var items = task.Result.Items;
+                var items = result.Items;
                 foreach (var item in items)
                 {
                     this.items.Add(item);

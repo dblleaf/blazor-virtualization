@@ -1,11 +1,10 @@
 ﻿@typeparam TItem
 
 <div class="virtual-list">
-    <div class="heighter" style="@(this.HeighterStyle)"></div>
-    <div class="spacer spacer-before" @ref="this.spaceBefore" style="@(this.SpacerBeforeStyle)"></div>
+    <VirtualListPane></VirtualListPane>
     @if (this.Layout != null)
     {
-        @this.Layout
+        @this.Layout(this)
     }
     else
     {
@@ -34,5 +33,4 @@
             </div>
         }
     }
-    <div class="spacer spacer-after" @ref="this.spaceAfter" style="@(this.SpacerAfterStyle)"></div>
 </div>

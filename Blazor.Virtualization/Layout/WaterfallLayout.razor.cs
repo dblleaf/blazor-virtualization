@@ -22,7 +22,7 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
     public Func<TItem, float, float> HeightCalculator { get; set; }
 
     [Parameter]
-    public float Spacing { get; set; }
+    public float Spacing { get; set; } = 8;
 
     [Parameter]
     public float ItemMinWidth { get; set; } = 200;
@@ -51,45 +51,55 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
     {
         if (this.VirtualList != null)
         {
-            this.VirtualList.OnContentWidthChange += this.OnContentWidthChange;
+            this.VirtualList.OnContentWidthChange += this.OnContentWidthChangeAsync;
+            this.VirtualList.OnSpacerBeforeVisible += this.OnSpacerVisibleAsync;
+            this.VirtualList.OnSpacerAfterVisible += this.OnSpacerVisibleAsync;
+            this.VirtualList.OnLoadedMore += this.LoadedMoreAsync;
         }
 
         base.OnParametersSet();
     }
 
-    private async Task OnContentWidthChange(ContentWidthChangeArgs args)
+    private async Task OnContentWidthChangeAsync(ContentWidthChangeArgs args)
     {
         this.contentWidth = args.Value;
         this.columnCount = this.CalColumnCount();
         this.columnWidth = this.GetColumnWidth();
         this.ReLayout();
-
-        this.UpdateItems(this.VirtualList.Items);
         if (!args.First)
         {
+            this.UpdateItems(this.VirtualList.Items);
+            this.VirtualList.Height = this.columnsTop.Max();
             await this.RenderAsync();
         }
     }
 
-    private void OnSpacerBeforeVisible(SpacerVisibleArgs args)
+    private async Task OnSpacerVisibleAsync(SpacerVisibleArgs args)
     {
         this.scrollTop = args.ScrollTop;
         this.clientHeight = args.ClientHeight;
+        await this.RenderAsync();
     }
 
-    private void OnSpacerAfterVisible(object sender, SpacerVisibleArgs args)
+    private Task LoadedMoreAsync(LoadedMoreArgs<TItem> args)
     {
-        this.scrollTop = args.ScrollTop;
-        this.clientHeight = args.ClientHeight;
+        this.AddItems(args.Items);
+        return Task.CompletedTask;
     }
 
     private PositionItem<TItem> ToPositionItem(TItem item)
     {
         var colomnIdex = this.GetColumnIndex();
+        var itemSize = 50f;
+        if (this.HeightCalculator != null)
+        {
+            itemSize = this.HeightCalculator(item, this.columnWidth);
+        }
+
         var virtualWaterfallItem = new PositionItem<TItem>
         {
             Data = item,
-            Height = this.HeightCalculator(item, this.columnWidth),
+            Height = itemSize,
             Width = this.columnWidth,
             Left = colomnIdex * (this.columnWidth + this.Spacing),
             Top = this.columnsTop[colomnIdex],
@@ -107,17 +117,6 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 
     private async Task RenderAsync()
     {
-        if (!(this.Items?.Count > 0))
-        {
-            var task = this.LoadDataAsync();
-            if (task.IsCompleted)
-            {
-                await this.RenderAsync();
-            }
-
-            return;
-        }
-
         var startIndex = 0;
         var endIndex = this.Items.Count;
         var min = this.Items.Where(o => o.Top < this.scrollTop - this.clientHeight).LastOrDefault();
@@ -130,15 +129,6 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         if (max != null)
         {
             endIndex = this.Items.IndexOf(max);
-        }
-
-        if (endIndex >= this.Items.Count - 5)
-        {
-            if (this.LoadDataAsync != null)
-            {
-                await this.LoadDataAsync();
-                await this.RenderAsync();
-            }
         }
 
         this.RenderItems = this.Items
@@ -157,11 +147,10 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 
     private async Task ChangeStateAsync()
     {
-        this.VirtualList.Height = this.columnsTop.Max();
         this.VirtualList.SpacerBeforeStyle = this.SpacerBeforeStyle;
         this.VirtualList.SpacerAfterStyle = this.SpacerAfterStyle;
-        this.StateHasChanged();
         await this.VirtualList.InvokeStateChangedAsync();
+        this.StateHasChanged();
     }
 
     private void UpdateItems(IEnumerable<TItem> itemsSource)
@@ -172,16 +161,25 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         {
             foreach (var item in itemsSource)
             {
-                this.AddVirtualWaterfallItem(item);
+                this.AddItem(item);
             }
         }
     }
 
-    private async ValueTask LoadDataAsync()
+    private void AddItems(IEnumerable<TItem> items)
     {
+        if (items == null)
+        {
+            return;
+        }
+
+        foreach (var item in items)
+        {
+            this.AddItem(item);
+        }
     }
 
-    private void AddVirtualWaterfallItem(TItem item)
+    private void AddItem(TItem item)
     {
         var virtualWaterfallItem = this.ToPositionItem(item);
         this.Items.Add(virtualWaterfallItem);

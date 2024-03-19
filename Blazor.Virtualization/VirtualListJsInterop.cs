@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 internal class VirtualListJsInterop : IAsyncDisposable
 {
-    private const string JsFunctionsPrefix = "Virtualization";
+    private const string JsFunctionsPrefix = "VirtualList";
     private readonly IJSRuntime jsRuntime;
     private readonly IVirtualListJsCallbacks owner;
     private readonly Lazy<Task<IJSObjectReference>> moduleTask;
@@ -19,7 +19,7 @@ internal class VirtualListJsInterop : IAsyncDisposable
         this.owner = owner;
         this.jsRuntime = jsRuntime;
         this.moduleTask = new Lazy<Task<IJSObjectReference>>(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-             "import", "./_content/Blazor.Virtualization/Virtualization.js").AsTask());
+             "import", "./_content/Blazor.Virtualization/VirtualList.js").AsTask());
     }
 
     public async Task InitializeAsync(ElementReference spacerBefore, ElementReference spacerAfter)

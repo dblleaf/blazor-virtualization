@@ -1,13 +1,14 @@
 ﻿@page "/"
 
 <PageTitle>Home</PageTitle>
-
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-<Virtualize Items="items">
-    <div style="width:200px;height:120px;display:inline-block;margin-right:8px;background:#AACCEE;"></div>
-</Virtualize>
+<VirtualList TItem="int" Items="data">
+    <Layout>
+        <WaterfallLayout VirtualList="context" HeightCalculator="(o,_)=>o"></WaterfallLayout>
+    </Layout>
+    <ItemTemplate>
+        <div style="height:100%;background-color:#aaccee;">@context</div>
+    </ItemTemplate>
+</VirtualList>
 @code {
-    private List<int> items = Enumerable.Range(0, 500).ToList();
+    private List<int> data = Enumerable.Range(0, 500).Select(o => new Random().Next(120, 300)).ToList();
 }

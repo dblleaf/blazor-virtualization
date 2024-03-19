@@ -10,8 +10,6 @@ using System.Threading.Tasks;
 
 public partial class VirtualList<TItem> : IVirtualList<TItem>, IAsyncDisposable
 {
-    public IEnumerable<TItem> Items { get; set; }
-
     public bool NoMore { get; set; }
 
     public Style SpacerBeforeStyle { get; set; }
@@ -43,9 +41,10 @@ public partial class VirtualList<TItem> : IVirtualList<TItem>, IAsyncDisposable
         await this.jsInterop.DisposeAsync();
     }
 
-    public async Task InvokeStateChangedAsync()
+    public Task InvokeStateChangedAsync()
     {
-        await this.InvokeAsync(this.StateHasChanged);
+        this.StateHasChanged();
+        return Task.CompletedTask;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -69,10 +68,6 @@ public partial class VirtualList<TItem> : IVirtualList<TItem>, IAsyncDisposable
                     $"{this.GetType()} can only accept one item source from its parameters. " +
                     $"Do not supply both '{nameof(this.Items)}' and '{nameof(this.IncrementalItemsProvider)}'.");
             }
-        }
-        else if (this.Items != null)
-        {
-            this.itemsProvider = this.DefaultItemsProvider;
         }
 
         base.OnParametersSet();

@@ -3,10 +3,14 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public partial class VirtualList<TItem>
 {
+    [Parameter]
+    public IEnumerable<TItem> Items { get; set; }
+
     [Parameter]
     public RenderFragment<IVirtualList<TItem>> Layout { get; set; }
 

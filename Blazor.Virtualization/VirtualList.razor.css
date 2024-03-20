@@ -1,22 +1,12 @@
-﻿.virtual-list {
+.virtual-list {
   position: relative;
 }
-
-.virtual-list .spacer {
-  position: absolute;
-  left: 0;
-  width: 100%;
-}
-
-.virtual-list .heighter {
-  position: relative;
-}
-
 .virtual-list .no-data {
   padding: 96px;
   text-align: center;
 }
-
 .virtual-list .no-data svg {
   margin: 16px;
 }
+
+/*# sourceMappingURL=VirtualList.razor.css.map */

@@ -1,0 +1,12 @@
+﻿.virtual-list {
+  position: relative;
+
+  .no-data {
+    padding: 96px;
+    text-align: center;
+
+    svg {
+      margin: 16px;
+    }
+  }
+}

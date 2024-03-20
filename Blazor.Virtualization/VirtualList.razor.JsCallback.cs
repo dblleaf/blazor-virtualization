@@ -1,12 +1,23 @@
 ﻿namespace Blazor.Virtualization;
 
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 public partial class VirtualList<TItem> : IVirtualListJsCallbacks
 {
+    public Func<Style, Style, Style, Task> OnStateChanged { get; set; }
+
+    public Func<Task> OnScrollTop { get; set; }
+
+    public async Task ScrollTopAsync()
+    {
+        await this.OnScrollTop.Invoke();
+    }
+
     public async Task ContentWidthChangeAsync(float contentWidth, bool firstCallback = false)
     {
         await this.OnContentWidthChange?.Invoke(new ContentWidthChangeArgs

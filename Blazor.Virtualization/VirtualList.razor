@@ -1,7 +1,9 @@
 ﻿@typeparam TItem
 
 <div class="virtual-list">
-    <VirtualListPane></VirtualListPane>
+    <CascadingValue TValue="IVirtualListJsCallbacks" Value="this" Name="VirtualListJsCallbacks">
+        <VirtualListPane></VirtualListPane>
+    </CascadingValue>
     @if (this.Layout != null)
     {
         @this.Layout(this)

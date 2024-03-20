@@ -2,44 +2,59 @@
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using System;
 using System.Threading.Tasks;
 
-internal partial class VirtualListPane
+public partial class VirtualListPane : IAsyncDisposable
 {
-    [Parameter]
-    public ElementReference SpaceBefore { get; set; }
+    private Style SpacerBeforeStyle { get; set; }
 
-    [Parameter]
-    public ElementReference SpaceAfter { get; set; }
+    private Style SpacerAfterStyle { get; set; }
 
-    public Style SpacerBeforeStyle { get; set; }
-
-    public Style SpacerAfterStyle { get; set; }
-
-    public float Height { get; set; }
-
-    private Style HeighterStyle
-      => Style.Create()
-          .Add("height", $"{this.Height}px");
+    private Style HeighterStyle { get; set; }
 
     [Inject]
     private IJSRuntime JSRuntime { get; set; }
 
+    [CascadingParameter(Name = "VirtualListJsCallbacks")]
+    private IVirtualListJsCallbacks VirtualListJsCallbacks
+    {
+        get => this.virtualListJsCallbacks;
+        set
+        {
+            this.virtualListJsCallbacks = value;
+            this.virtualListJsCallbacks.OnStateChanged = (beforeStyle, afterStyle, heighterStyle) =>
+            {
+                this.SpacerBeforeStyle = beforeStyle;
+                this.SpacerAfterStyle = afterStyle;
+                this.HeighterStyle = heighterStyle;
+                this.StateHasChanged();
+
+                return Task.CompletedTask;
+            };
+
+            this.virtualListJsCallbacks.OnScrollTop = async () =>
+            {
+                await this.jsInterop.ScrollTopAsync();
+            };
+        }
+    }
+
+    private IVirtualListJsCallbacks virtualListJsCallbacks;
     private VirtualListJsInterop jsInterop;
     private ElementReference spaceBefore;
     private ElementReference spaceAfter;
 
-    public Task InvokeStateChangedAsync()
+    public async ValueTask DisposeAsync()
     {
-        this.StateHasChanged();
-        return Task.CompletedTask;
+        await this.jsInterop.DisposeAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            this.jsInterop = new VirtualListJsInterop(this.JSRuntime, this);
+            this.jsInterop = new VirtualListJsInterop(this.JSRuntime, this.VirtualListJsCallbacks);
             await this.jsInterop.InitializeAsync(this.spaceBefore, this.spaceAfter);
         }
 

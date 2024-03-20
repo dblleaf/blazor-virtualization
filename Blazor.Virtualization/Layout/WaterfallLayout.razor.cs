@@ -14,6 +14,7 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
     private int columnCount;
     private float spacerBeforeHeight;
     private float spacerAfterTop;
+    private float height;
 
     [Parameter]
     public IVirtualList<TItem> VirtualList { get; set; }
@@ -43,6 +44,10 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         => Style.Create()
             .Add("top", $"{this.spacerAfterTop}px")
             .Add("bottom", "0");
+
+    private Style HeighterStyle
+        => Style.Create()
+            .Add("height", $"{this.height}px");
 
     private float scrollTop;
     private float clientHeight;
@@ -147,9 +152,11 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 
     private async Task ChangeStateAsync()
     {
-        this.VirtualList.SpacerBeforeStyle = this.SpacerBeforeStyle;
-        this.VirtualList.SpacerAfterStyle = this.SpacerAfterStyle;
-        await this.VirtualList.InvokeStateChangedAsync();
+        this.height = this.columnsTop.Max();
+        await this.VirtualList.OnStateChanged(
+            this.SpacerBeforeStyle,
+            this.SpacerAfterStyle,
+            this.HeighterStyle);
         this.StateHasChanged();
     }
 

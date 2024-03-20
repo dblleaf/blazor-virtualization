@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public interface IVirtualList<TItem>
+public interface IVirtualList<TItem> : IVirtualListJsCallbacks
 {
     Style SpacerBeforeStyle { get; set; }
 
@@ -33,8 +33,4 @@ public interface IVirtualList<TItem>
     IEnumerable<TItem> Items { get; set; }
 
     bool NoMore { get; set; }
-
-    Task ScrollTopAsync();
-
-    Task InvokeStateChangedAsync();
 }

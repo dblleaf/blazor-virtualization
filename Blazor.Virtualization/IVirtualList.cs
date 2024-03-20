@@ -8,12 +8,6 @@ using System.Threading.Tasks;
 
 public interface IVirtualList<TItem> : IVirtualListJsCallbacks
 {
-    Style SpacerBeforeStyle { get; set; }
-
-    Style SpacerAfterStyle { get; set; }
-
-    public float Height { get; set; }
-
     RenderFragment<TItem> ItemTemplate { get; set; }
 
     RenderFragment EmptyTemplate { get; set; }

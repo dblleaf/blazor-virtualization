@@ -74,7 +74,6 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         if (!args.First)
         {
             this.UpdateItems(this.VirtualList.Items);
-            this.VirtualList.Height = this.columnsTop.Max();
             await this.RenderAsync();
         }
     }

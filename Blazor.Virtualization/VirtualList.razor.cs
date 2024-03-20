@@ -9,16 +9,6 @@ public partial class VirtualList<TItem> : IVirtualList<TItem>
 {
     public bool NoMore { get; set; }
 
-    public Style SpacerBeforeStyle { get; set; }
-
-    public Style SpacerAfterStyle { get; set; }
-
-    public float Height { get; set; }
-
-    private Style HeighterStyle
-      => Style.Create()
-          .Add("height", $"{this.Height}px");
-
     private List<TItem> items;
     private Func<ItemsProviderRequest, ValueTask<ItemsProviderResult<TItem>>> itemsProvider = default!;
 

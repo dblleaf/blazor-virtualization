@@ -9,12 +9,12 @@ internal class VirtualListJsInterop : IAsyncDisposable
 {
     private const string JsFunctionsPrefix = "VirtualList";
     private readonly IJSRuntime jsRuntime;
-    private readonly IVirtualListJsCallbacks owner;
+    private readonly IVirtualList owner;
     private readonly Lazy<Task<IJSObjectReference>> moduleTask;
 
     private DotNetObjectReference<VirtualListJsInterop> dotNetObject;
 
-    public VirtualListJsInterop(IJSRuntime jsRuntime, IVirtualListJsCallbacks owner)
+    public VirtualListJsInterop(IJSRuntime jsRuntime, IVirtualList owner)
     {
         this.owner = owner;
         this.jsRuntime = jsRuntime;
@@ -63,8 +63,8 @@ internal class VirtualListJsInterop : IAsyncDisposable
     }
 
     [JSInvokable]
-    public Task OnSpacerAfterVisible(float scrollTop, float clientHeight)
+    public Task OnSpacerAfterVisible(float scrollTop, float scrollHeight, float clientHeight)
     {
-        return this.owner.SpacerAfterVisibleAsync(scrollTop, clientHeight);
+        return this.owner.SpacerAfterVisibleAsync(scrollTop, scrollHeight, clientHeight);
     }
 }

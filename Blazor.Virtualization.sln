@@ -5,7 +5,7 @@ VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Virtualization", "Blazor.Virtualization\Blazor.Virtualization.csproj", "{B1AFD019-896E-43B7-B9C2-90E47310849C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Virtualization.Samples", "Blazor.Virtualization.Samples\Blazor.Virtualization.Samples.csproj", "{EC96DDBC-91EA-4270-83B0-0FC7BB317CC0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Virtualization.Samples", "Blazor.Virtualization.Samples\Blazor.Virtualization.Samples.csproj", "{EC96DDBC-91EA-4270-83B0-0FC7BB317CC0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

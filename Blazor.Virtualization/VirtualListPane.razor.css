@@ -3,9 +3,15 @@
   left: 0;
   width: 100%;
 }
-
 .virtual-list .heighter {
   position: relative;
+}
+.virtual-list .no-data {
+  padding: 96px;
+  text-align: center;
+}
+.virtual-list .no-data svg {
+  margin: 16px;
 }
 
 /*# sourceMappingURL=VirtualListPane.razor.css.map */

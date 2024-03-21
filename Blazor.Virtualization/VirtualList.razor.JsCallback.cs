@@ -1,13 +1,11 @@
 ﻿namespace Blazor.Virtualization;
 
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web.Virtualization;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-public partial class VirtualList<TItem> : IVirtualListJsCallbacks
+public partial class VirtualList<TItem>
 {
     public Func<Style, Style, Style, Task> OnStateChanged { get; set; }
 
@@ -25,9 +23,14 @@ public partial class VirtualList<TItem> : IVirtualListJsCallbacks
             Value = contentWidth,
             First = firstCallback,
         });
+
+        if (firstCallback && this.IncrementalItemsProvider != null)
+        {
+            await this.LoadMoreAsync();
+        }
     }
 
-    public async Task SpacerAfterVisibleAsync(float scrollTop, float clientHeight)
+    public async Task SpacerAfterVisibleAsync(float scrollTop, float scrollheight, float clientHeight)
     {
         await this.OnSpacerAfterVisible?.Invoke(new SpacerVisibleArgs
         {
@@ -35,25 +38,9 @@ public partial class VirtualList<TItem> : IVirtualListJsCallbacks
             ClientHeight = clientHeight,
         });
 
-        if (scrollTop + 100 > clientHeight)
+        if (scrollTop + clientHeight * 2 + 500 > scrollheight)
         {
-            var tokenSource = new CancellationTokenSource();
-            var token = tokenSource.Token;
-            var request = new ItemsProviderRequest(this.Items.Count(), this.Items.Count(), token);
-            var result = await this.IncrementalItemsProvider(request);
-            if (!token.IsCancellationRequested)
-            {
-                var items = result.Items;
-                foreach (var item in items)
-                {
-                    this.items.Add(item);
-                }
-
-                await this.OnLoadedMore?.Invoke(new LoadedMoreArgs<TItem>
-                {
-                    Items = items,
-                });
-            }
+            await this.LoadMoreAsync();
         }
     }
 
@@ -64,5 +51,30 @@ public partial class VirtualList<TItem> : IVirtualListJsCallbacks
             ScrollTop = scrollTop,
             ClientHeight = clientHeight,
         });
+    }
+
+    private async Task LoadMoreAsync()
+    {
+        if (this.IncrementalItemsProvider == null)
+        {
+            return;
+        }
+
+        var tokenSource = new CancellationTokenSource();
+        var token = tokenSource.Token;
+        var result = await this.IncrementalItemsProvider();
+        if (result != null)
+        {
+            this.Items ??= new List<TItem>();
+            foreach (var item in result)
+            {
+                this.Items.Add(item);
+            }
+
+            await this.OnLoadedMore?.Invoke(new LoadedMoreArgs<TItem>
+            {
+                Items = result,
+            });
+        }
     }
 }

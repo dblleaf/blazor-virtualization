@@ -83,6 +83,7 @@ const init = (dotNetHelper: DotNet.DotNetObject, spacerBefore: HTMLElement, spac
       }
       const containerHeight = (scrollContainer || document.documentElement).clientHeight;
       const scrollTop = (scrollContainer || document.documentElement).scrollTop;
+      const scrollHeight = (scrollContainer || document.documentElement).scrollHeight;
       console.log(scrollContainer || document.documentElement);
 
       if (entry.target == spacerBefore) {
@@ -90,7 +91,7 @@ const init = (dotNetHelper: DotNet.DotNetObject, spacerBefore: HTMLElement, spac
       } else if (entry.target == spacerAfter) {
         const style = getComputedStyle(spacerAfter);
         if (parseInt(style.top.replace('px', '')) > 0) {
-          dotNetHelper.invokeMethodAsync('OnSpacerAfterVisible', scrollTop, containerHeight);
+          dotNetHelper.invokeMethodAsync('OnSpacerAfterVisible', scrollTop, scrollHeight, containerHeight);
         }
       }
     });

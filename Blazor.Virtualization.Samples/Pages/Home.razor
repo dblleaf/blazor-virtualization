@@ -1,6 +1,8 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Basic</PageTitle>
+
+<h3>Basic</h3>
 <VirtualList TItem="int" Items="data">
     <Layout>
         <WaterfallLayout VirtualList="context"
@@ -12,5 +14,9 @@
     </ItemTemplate>
 </VirtualList>
 @code {
-    private List<int> data = Enumerable.Range(0, 500).Select(o => new Random().Next(120, 300)).ToList();
+    private List<int> data =
+      Enumerable
+        .Range(0, 500)
+        .Select(o => new Random().Next(120, 300))
+        .ToList();
 }

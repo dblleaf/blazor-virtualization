@@ -1,9 +1,20 @@
-﻿.virtual-list .spacer {
-  position: absolute;
-  left: 0;
-  width: 100%;
-}
+﻿.virtual-list {
+  .spacer {
+    position: absolute;
+    left: 0;
+    width: 100%;
+  }
 
-.virtual-list .heighter {
-  position: relative;
+  .heighter {
+    position: relative;
+  }
+
+  .no-data {
+    padding: 96px;
+    text-align: center;
+
+    svg {
+      margin: 16px;
+    }
+  }
 }

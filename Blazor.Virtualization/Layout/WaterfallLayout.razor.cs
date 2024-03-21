@@ -139,7 +139,6 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
             .Skip(startIndex)
             .Take(endIndex - startIndex)
             .ToList();
-
         if (this.RenderItems?.Count > 0)
         {
             this.spacerBeforeHeight = this.RenderItems.GroupBy(o => o.Left, o => o.Top).Select(o => o.Min()).Max();
@@ -187,8 +186,8 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 
     private void AddItem(TItem item)
     {
-        var virtualWaterfallItem = this.ToPositionItem(item);
-        this.Items.Add(virtualWaterfallItem);
+        var positionItem = this.ToPositionItem(item);
+        this.Items.Add(positionItem);
     }
 
     private int GetColumnIndex()

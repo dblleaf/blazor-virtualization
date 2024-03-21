@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 public partial class VirtualList<TItem>
 {
     [Parameter]
-    public IEnumerable<TItem> Items { get; set; }
+    public IList<TItem> Items { get; set; }
 
     [Parameter]
     public RenderFragment<IVirtualList<TItem>> Layout { get; set; }
@@ -21,5 +21,5 @@ public partial class VirtualList<TItem>
     public RenderFragment EmptyTemplate { get; set; }
 
     [Parameter]
-    public Func<ItemsProviderRequest, ValueTask<ItemsProviderResult<TItem>>> IncrementalItemsProvider { get; set; }
+    public Func<ValueTask<List<TItem>>> IncrementalItemsProvider { get; set; }
 }

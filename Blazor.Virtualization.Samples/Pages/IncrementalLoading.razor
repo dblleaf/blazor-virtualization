@@ -1,0 +1,27 @@
+﻿@page "/incrementalloading"
+
+<PageTitle>Incremental Loading</PageTitle>
+<h3>Incremental Loading</h3>
+
+<VirtualList TItem="int"
+             IncrementalItemsProvider="@this.LoadDataAsync">
+    <Layout>
+        <WaterfallLayout VirtualList="context"
+                         Spacing="24"
+                         HeightCalculator="(o,_)=>o"></WaterfallLayout>
+    </Layout>
+    <ItemTemplate>
+        <div style="height:100%;background-color:#aaccee;">@context</div>
+    </ItemTemplate>
+</VirtualList>
+
+@code {
+    private ValueTask<List<int>> LoadDataAsync()
+    {
+        var items = Enumerable
+              .Range(0, 50)
+              .Select(o => new Random().Next(120, 300))
+              .ToList();
+        return ValueTask.FromResult(items);
+    }
+}

@@ -16,14 +16,14 @@ public partial class VirtualListPane : IAsyncDisposable
     [Inject]
     private IJSRuntime JSRuntime { get; set; }
 
-    [CascadingParameter(Name = "VirtualListJsCallbacks")]
-    private IVirtualListJsCallbacks VirtualListJsCallbacks
+    [CascadingParameter(Name = "VirtualList")]
+    private IVirtualList VirtualList
     {
-        get => this.virtualListJsCallbacks;
+        get => this.virtualList;
         set
         {
-            this.virtualListJsCallbacks = value;
-            this.virtualListJsCallbacks.OnStateChanged = (beforeStyle, afterStyle, heighterStyle) =>
+            this.virtualList = value;
+            this.virtualList.OnStateChanged = (beforeStyle, afterStyle, heighterStyle) =>
             {
                 this.SpacerBeforeStyle = beforeStyle;
                 this.SpacerAfterStyle = afterStyle;
@@ -33,14 +33,14 @@ public partial class VirtualListPane : IAsyncDisposable
                 return Task.CompletedTask;
             };
 
-            this.virtualListJsCallbacks.OnScrollTop = async () =>
+            this.virtualList.OnScrollTop = async () =>
             {
                 await this.jsInterop.ScrollTopAsync();
             };
         }
     }
 
-    private IVirtualListJsCallbacks virtualListJsCallbacks;
+    private IVirtualList virtualList;
     private VirtualListJsInterop jsInterop;
     private ElementReference spaceBefore;
     private ElementReference spaceAfter;
@@ -54,7 +54,7 @@ public partial class VirtualListPane : IAsyncDisposable
     {
         if (firstRender)
         {
-            this.jsInterop = new VirtualListJsInterop(this.JSRuntime, this.VirtualListJsCallbacks);
+            this.jsInterop = new VirtualListJsInterop(this.JSRuntime, this.virtualList);
             await this.jsInterop.InitializeAsync(this.spaceBefore, this.spaceAfter);
         }
 

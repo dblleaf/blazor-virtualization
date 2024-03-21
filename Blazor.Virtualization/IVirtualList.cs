@@ -1,18 +1,16 @@
 ﻿namespace Blazor.Virtualization;
 
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web.Virtualization;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public interface IVirtualList<TItem> : IVirtualListJsCallbacks
+public interface IVirtualList
 {
-    RenderFragment<TItem> ItemTemplate { get; set; }
+    bool NoMore { get; }
 
-    RenderFragment EmptyTemplate { get; set; }
+    bool HasAny { get; }
 
-    Func<ItemsProviderRequest, ValueTask<ItemsProviderResult<TItem>>> IncrementalItemsProvider { get; set; }
+    bool IsLoading { get; }
 
     Func<ContentWidthChangeArgs, Task> OnContentWidthChange { get; set; }
 
@@ -22,9 +20,17 @@ public interface IVirtualList<TItem> : IVirtualListJsCallbacks
 
     Func<EventArgs, Task> OnRefresh { get; set; }
 
-    Func<LoadedMoreArgs<TItem>, Task> OnLoadedMore { get; set; }
+    Func<Style, Style, Style, Task> OnStateChanged { get; set; }
 
-    IEnumerable<TItem> Items { get; set; }
+    Func<Task> OnScrollTop { get; set; }
 
-    bool NoMore { get; set; }
+    RenderFragment EmptyTemplate { get; set; }
+
+    Task ContentWidthChangeAsync(float contentWidth, bool firstCallback = false);
+
+    Task SpacerBeforeVisibleAsync(float scrollTop, float clientHeight);
+
+    Task SpacerAfterVisibleAsync(float scrollTop, float scrollHeight, float clientHeight);
+
+    Task ScrollTopAsync();
 }

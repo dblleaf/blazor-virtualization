@@ -36,12 +36,8 @@ public partial class VirtualList<TItem>
         {
             ScrollTop = scrollTop,
             ClientHeight = clientHeight,
+            ScrollHeight = scrollheight,
         });
-
-        if (scrollTop + clientHeight * 2 + 500 > scrollheight)
-        {
-            await this.LoadMoreAsync();
-        }
     }
 
     public async Task SpacerBeforeVisibleAsync(float scrollTop, float clientHeight)
@@ -53,7 +49,7 @@ public partial class VirtualList<TItem>
         });
     }
 
-    private async Task LoadMoreAsync()
+    public async Task LoadMoreAsync()
     {
         if (this.IncrementalItemsProvider == null)
         {

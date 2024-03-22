@@ -7,4 +7,6 @@ public class SpacerVisibleArgs : EventArgs
     public float ScrollTop { get; set; }
 
     public float ClientHeight { get; set; }
+
+    public float ScrollHeight { get; set; }
 }

@@ -59,7 +59,7 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
             this.VirtualList.OnContentWidthChange += this.OnContentWidthChangeAsync;
             this.VirtualList.OnSpacerBeforeVisible += this.OnSpacerVisibleAsync;
             this.VirtualList.OnSpacerAfterVisible += this.OnSpacerVisibleAsync;
-            this.VirtualList.OnLoadedMore += this.LoadedMoreAsync;
+            this.VirtualList.OnLoadedMore += this.OnLoadedMoreAsync;
         }
 
         base.OnParametersSet();
@@ -82,10 +82,15 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
     {
         this.scrollTop = args.ScrollTop;
         this.clientHeight = args.ClientHeight;
+
         await this.RenderAsync();
+        if (args.ScrollHeight - this.spacerAfterTop < args.ClientHeight)
+        {
+            await this.VirtualList.LoadMoreAsync();
+        }
     }
 
-    private Task LoadedMoreAsync(LoadedMoreArgs<TItem> args)
+    private Task OnLoadedMoreAsync(LoadedMoreArgs<TItem> args)
     {
         this.AddItems(args.Items);
         return Task.CompletedTask;

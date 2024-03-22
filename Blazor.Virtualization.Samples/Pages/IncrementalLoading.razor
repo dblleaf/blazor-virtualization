@@ -7,7 +7,7 @@
              IncrementalItemsProvider="@this.LoadDataAsync">
     <Layout>
         <WaterfallLayout VirtualList="context"
-                         Spacing="24"
+                         Spacing="12"
                          HeightCalculator="(o,_)=>o"></WaterfallLayout>
     </Layout>
     <ItemTemplate>
@@ -20,7 +20,7 @@
     {
         var items = Enumerable
               .Range(0, 50)
-              .Select(o => new Random().Next(120, 300))
+              .Select(o => new Random().Next(120, 600))
               .ToList();
         return ValueTask.FromResult(items);
     }

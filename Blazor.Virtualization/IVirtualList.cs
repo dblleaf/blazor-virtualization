@@ -33,4 +33,6 @@ public interface IVirtualList
     Task SpacerAfterVisibleAsync(float scrollTop, float scrollHeight, float clientHeight);
 
     Task ScrollTopAsync();
+
+    Task LoadMoreAsync();
 }

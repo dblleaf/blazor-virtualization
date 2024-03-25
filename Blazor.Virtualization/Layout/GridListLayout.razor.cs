@@ -6,13 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
+public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
 {
     [Parameter]
     public IVirtualList<TItem> VirtualList { get; set; }
-
-    [Parameter]
-    public Func<TItem, float, float> HeightCalculator { get; set; }
 
     [Parameter]
     public float Spacing { get; set; } = 8;
@@ -22,6 +19,9 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 
     [Parameter]
     public int MinColumnCount { get; set; } = 1;
+
+    [Parameter]
+    public string ItemHeight { get; set; }
 
     private List<PositionItem<TItem>> RenderItems { get; set; }
 
@@ -41,7 +41,6 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         => Style.Create()
             .Add("height", $"{this.height}px");
 
-    private List<float> columnsTop = new List<float>();
     private float columnWidth;
     private float contentWidth;
     private int columnCount;
@@ -95,34 +94,6 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         return Task.CompletedTask;
     }
 
-    private PositionItem<TItem> ToPositionItem(TItem item)
-    {
-        var colomnIdex = this.GetColumnIndex();
-        var itemSize = 50f;
-        if (this.HeightCalculator != null)
-        {
-            itemSize = this.HeightCalculator(item, this.columnWidth);
-        }
-
-        var virtualWaterfallItem = new PositionItem<TItem>
-        {
-            Data = item,
-            Height = itemSize,
-            Width = this.columnWidth,
-            Left = colomnIdex * (this.columnWidth + this.Spacing),
-            Top = this.columnsTop[colomnIdex],
-            Spacing = this.Spacing,
-        };
-
-        this.columnsTop[colomnIdex] = virtualWaterfallItem.Top + virtualWaterfallItem.Height + this.Spacing;
-        return virtualWaterfallItem;
-    }
-
-    private void ReLayout()
-    {
-        this.columnsTop = Enumerable.Range(0, this.columnCount).Select(_ => 0f).ToList();
-    }
-
     private async Task RenderAsync()
     {
         var startIndex = 0;
@@ -154,7 +125,13 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 
     private async Task ChangeStateAsync()
     {
-        this.height = this.columnsTop.Max();
+        var last = this.Items.LastOrDefault();
+        this.height = 0;
+        if (last != null)
+        {
+            this.height = last.Top + last.Spacing;
+        }
+
         await this.VirtualList.OnStateChanged(
             this.SpacerBeforeStyle,
             this.SpacerAfterStyle,
@@ -165,7 +142,6 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
     private void UpdateItems(IEnumerable<TItem> itemsSource)
     {
         this.Items.Clear();
-        this.columnsTop = Enumerable.Range(0, this.columnCount).Select(_ => 0f).ToList();
         if (itemsSource != null)
         {
             foreach (var item in itemsSource)
@@ -194,9 +170,29 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         this.Items.Add(positionItem);
     }
 
-    private int GetColumnIndex()
+    private PositionItem<TItem> ToPositionItem(TItem item)
     {
-        return this.columnsTop.IndexOf(this.columnsTop.Min());
+        var itemsCount = this.Items.Count;
+        var itemSize = this.columnWidth;
+        if (string.IsNullOrWhiteSpace(this.ItemHeight))
+        {
+            if (float.TryParse(this.ItemHeight, out float itemHeight))
+            {
+                itemSize = itemHeight;
+            }
+        }
+
+        var virtualWaterfallItem = new PositionItem<TItem>
+        {
+            Data = item,
+            Height = itemSize,
+            Width = this.columnWidth,
+            Left = itemsCount % this.columnCount * (this.columnWidth + this.Spacing),
+            Top = itemsCount / this.columnCount * (itemSize + this.Spacing),
+            Spacing = this.Spacing,
+        };
+
+        return virtualWaterfallItem;
     }
 
     private float GetColumnWidth()
@@ -216,5 +212,9 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         }
 
         return this.MinColumnCount;
+    }
+
+    private void ReLayout()
+    {
     }
 }

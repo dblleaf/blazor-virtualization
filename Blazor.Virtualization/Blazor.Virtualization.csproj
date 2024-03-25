@@ -33,4 +33,8 @@
     <PackageReference Include="AspNetCore.SassCompiler" Version="1.72.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Layout\GridListLayout.razor.scss" />
+  </ItemGroup>
+
 </Project>

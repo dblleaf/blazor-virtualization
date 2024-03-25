@@ -1,0 +1,27 @@
+﻿@page "/gridlist"
+
+<PageTitle>GridList</PageTitle>
+<h3>GridList</h3>
+
+<VirtualList TItem="int"
+             IncrementalItemsProvider="@this.LoadDataAsync">
+    <Layout>
+        <GridListLayout VirtualList="context"
+                         Spacing="12"
+                        ItemHeight="Auto"></GridListLayout>
+    </Layout>
+    <ItemTemplate>
+        <div style="height:100%;background-color:#aaccee;">@context</div>
+    </ItemTemplate>
+</VirtualList>
+
+@code {
+    private ValueTask<List<int>> LoadDataAsync()
+    {
+        var items = Enumerable
+              .Range(0, 50)
+              .Select(o => new Random().Next(120, 600))
+              .ToList();
+        return ValueTask.FromResult(items);
+    }
+}

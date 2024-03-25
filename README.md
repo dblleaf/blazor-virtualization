@@ -1,6 +1,6 @@
 # Blazor.Virtualization
 
-This is a virtual list component packaged with blazor. Built in layouts such as Waterfall, LinedFlow, and DataList. And it supports incremental loading.
+This is a virtual list component packaged with blazor. Built in layouts such as Waterfall, LinedFlow, and GridList. And it supports incremental loading.
 
 *However, the size of the data items for WaterfallLayout and LinedFlowLayout must be known, or can be calculated based on the data items. So the two layouts don't support auto-sizing items.*
 

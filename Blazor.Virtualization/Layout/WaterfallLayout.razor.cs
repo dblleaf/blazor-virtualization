@@ -23,7 +23,7 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
     [Parameter]
     public int MinColumnCount { get; set; } = 1;
 
-    private List<PositionItem<TItem>> RenderItems { get; set; }
+    private IEnumerable<PositionItem<TItem>> RenderItems { get; set; }
 
     private List<PositionItem<TItem>> Items { get; } = [];
 
@@ -141,9 +141,8 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 
         this.RenderItems = this.Items
             .Skip(startIndex)
-            .Take(endIndex - startIndex)
-            .ToList();
-        if (this.RenderItems?.Count > 0)
+            .Take(endIndex - startIndex);
+        if (this.RenderItems?.Count() > 0)
         {
             this.spacerBeforeHeight = this.RenderItems.GroupBy(o => o.Left, o => o.Top).Select(o => o.Min()).Max();
             this.spacerAfterTop = this.RenderItems.GroupBy(o => o.Left, o => o.Top + o.Height).Select(o => o.Max()).Min();

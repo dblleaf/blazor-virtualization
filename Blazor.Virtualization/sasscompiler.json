@@ -1,4 +1,6 @@
 {
+  "Target": "wwwroot/css",
+  "Source": "Styles",
   "Arguments": "--error-css --style=expanded --source-map",
   "ScopedCssFolders": [ "." ],
   "GenerateScopedCss": true,

@@ -1,9 +1,9 @@
 ﻿@typeparam TItem
 
- @if (this.RenderItems?.Count > 0)
+ @if (this.RenderItems?.Count() > 0)
 {
     @foreach (var item in this.RenderItems)
     {
-        <div class="item" style="@(item.Style)">@(this.VirtualList?.ItemTemplate(item.Data))</div>
+        <div class="waterfall-item" style="@(item.Style)">@(this.VirtualList?.ItemTemplate(item.Data))</div>
     }
 }

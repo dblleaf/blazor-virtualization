@@ -1,14 +1,14 @@
-﻿@page "/gridlist"
+﻿@page "/linedflow"
 
-<PageTitle>Grid List</PageTitle>
-<h3>Grid List</h3>
+<PageTitle>Linded Flow</PageTitle>
+<h3>Linded Flow</h3>
 
 <VirtualList TItem="int"
              IncrementalItemsProvider="@this.LoadDataAsync">
     <Layout>
-        <GridListLayout VirtualList="context"
-                         Spacing="12"
-                        ItemHeight="Auto"></GridListLayout>
+        <LinedFlowLayout VirtualList="context"
+                         Spacing="8"
+                         WidthCalculator="o=>o*1f"></LinedFlowLayout>
     </Layout>
     <ItemTemplate>
         <div style="height:100%;background-color:#aaccee;">@context</div>
@@ -20,7 +20,7 @@
     {
         var items = Enumerable
               .Range(0, 50)
-              .Select(o => new Random().Next(120, 600))
+              .Select(o => new Random().Next(120, 300))
               .ToList();
         return ValueTask.FromResult(items);
     }

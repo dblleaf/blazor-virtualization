@@ -1,0 +1,10 @@
+﻿@typeparam TItem
+<div class="lined-flow" style="@(ContainerStyle)">
+    @if (this.RenderItems?.Count() > 0)
+    {
+        @foreach (var item in this.RenderItems)
+        {
+            <div class="lined-flow-item" style="@(item.Style)">@(this.VirtualList?.ItemTemplate(item.Data))</div>
+        }
+    }
+</div>

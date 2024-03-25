@@ -1,0 +1,17 @@
+﻿.lined-flow {
+  display: flex;
+  flex-wrap: wrap;
+  position: absolute;
+  width: 100%;
+
+  &:after {
+    content: ' ';
+    flex-grow: 100;
+  }
+
+  &-item {
+    flex-grow: 1;
+    width: auto;
+    object-fit: cover;
+  }
+}

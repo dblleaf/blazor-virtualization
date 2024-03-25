@@ -37,4 +37,8 @@
     <UpToDateCheckInput Remove="Layout\GridListLayout.razor.scss" />
   </ItemGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Layout\LinedFlowLayout.razor.scss" />
+  </ItemGroup>
+
 </Project>

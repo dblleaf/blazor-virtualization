@@ -1,12 +1,12 @@
 ﻿namespace Blazor.Virtualization.Layout;
 
 using Microsoft.AspNetCore.Components;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using System;
+using System.Linq;
 
-public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
+public partial class LinedFlowLayout<TItem> : ComponentBase, ILayout<TItem>
 {
     [Parameter]
     public IVirtualList<TItem> VirtualList { get; set; }
@@ -15,40 +15,41 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
     public float Spacing { get; set; } = 8;
 
     [Parameter]
-    public float ItemMinWidth { get; set; } = 200;
+    public float RowHeight { get; set; } = 200;
 
     [Parameter]
-    public int MinColumnCount { get; set; } = 1;
+    public Func<TItem, float> WidthCalculator { get; set; }
 
-    [Parameter]
-    public string ItemHeight { get; set; }
+    private IEnumerable<RowItem<TItem>> RenderItems { get; set; }
 
-    private IEnumerable<PositionItem<TItem>> RenderItems { get; set; }
-
-    private List<PositionItem<TItem>> Items { get; } = [];
+    private List<RowItem<TItem>> Items { get; } = [];
 
     private Style SpacerBeforeStyle
         => Style.Create()
             .Add("top", "0")
-            .Add("height", $"{this.spacerBeforeHeight}px");
+            .Add("height", $"{this.containerTop}px");
 
     private Style SpacerAfterStyle
         => Style.Create()
-            .Add("top", $"{this.spacerAfterTop}px")
+            .Add("top", $"{this.containerBottom}px")
             .Add("bottom", "0");
 
     private Style HeighterStyle
         => Style.Create()
             .Add("height", $"{this.height}px");
 
-    private float columnWidth;
+    private Style ContainerStyle
+        => Style.Create()
+            .Add("top", $"{this.containerTop}px");
+
     private float contentWidth;
-    private int columnCount;
-    private float spacerBeforeHeight;
-    private float spacerAfterTop;
     private float height;
     private float scrollTop;
     private float clientHeight;
+    private int row;
+    private float width;
+    private float containerTop;
+    private float containerBottom;
 
     protected override void OnParametersSet()
     {
@@ -66,8 +67,6 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
     private async Task OnContentWidthChangeAsync(ContentWidthChangeArgs args)
     {
         this.contentWidth = args.Value;
-        this.columnCount = this.CalColumnCount();
-        this.columnWidth = this.GetColumnWidth();
         this.ReLayout();
         if (!args.First)
         {
@@ -82,7 +81,7 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
         this.clientHeight = args.ClientHeight;
 
         await this.RenderAsync();
-        if (args.ScrollHeight - this.spacerAfterTop < args.ClientHeight)
+        if (args.ScrollHeight - this.containerBottom < 200)
         {
             await this.VirtualList.LoadMoreAsync();
         }
@@ -96,28 +95,23 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
 
     private async Task RenderAsync()
     {
-        var startIndex = 0;
         var endIndex = this.Items.Count;
-        var min = this.Items.Where(o => o.Top < this.scrollTop - this.clientHeight).LastOrDefault();
-        var max = this.Items.Where(o => o.Top + o.Height > this.scrollTop + this.clientHeight * 2).FirstOrDefault();
-        if (min != null)
+        var minRow = (float)Math.Floor((this.scrollTop - this.clientHeight) / (this.RowHeight + this.Spacing));
+        var maxRow = (float)Math.Ceiling((this.scrollTop + this.clientHeight * 2) / (this.RowHeight + this.Spacing));
+        if (minRow < 0)
         {
-            startIndex = this.Items.IndexOf(min);
+            minRow = 0;
         }
 
-        if (max != null)
+        if (maxRow > this.row)
         {
-            endIndex = this.Items.IndexOf(max);
+            maxRow = this.row;
         }
 
+        this.containerTop = minRow * (this.RowHeight + this.Spacing);
+        this.containerBottom = (maxRow + 1) * (this.RowHeight + this.Spacing);
         this.RenderItems = this.Items
-            .Skip(startIndex)
-            .Take(endIndex - startIndex);
-        if (this.RenderItems?.Count() > 0)
-        {
-            this.spacerBeforeHeight = this.RenderItems.GroupBy(o => o.Left, o => o.Top).Select(o => o.Min()).Max();
-            this.spacerAfterTop = this.RenderItems.GroupBy(o => o.Left, o => o.Top + o.Height).Select(o => o.Max()).Min();
-        }
+            .Where(o => o.Row >= minRow && o.Row <= maxRow);
 
         await this.ChangeStateAsync();
     }
@@ -128,7 +122,7 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
         this.height = 0;
         if (last != null)
         {
-            this.height = last.Top + last.Spacing;
+            this.height = (last.Row + 1) * (this.RowHeight + this.Spacing);
         }
 
         await this.VirtualList.OnStateChanged(
@@ -165,55 +159,40 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
 
     private void AddItem(TItem item)
     {
-        var positionItem = this.ToPositionItem(item);
+        var positionItem = this.ToRowItem(item);
         this.Items.Add(positionItem);
     }
 
-    private PositionItem<TItem> ToPositionItem(TItem item)
+    private RowItem<TItem> ToRowItem(TItem item)
     {
-        var itemsCount = this.Items.Count;
-        var itemSize = this.columnWidth;
-        if (string.IsNullOrWhiteSpace(this.ItemHeight))
+        float itemWidth = 300f;
+        if (this.WidthCalculator != null)
         {
-            if (float.TryParse(this.ItemHeight, out float itemHeight))
-            {
-                itemSize = itemHeight;
-            }
+            itemWidth = this.WidthCalculator(item);
         }
 
-        var virtualWaterfallItem = new PositionItem<TItem>
+        if (this.width + itemWidth + this.Spacing > this.contentWidth)
         {
+            this.width = 0;
+            this.row++;
+        }
+
+        this.width += itemWidth + this.Spacing;
+        var virtualWaterfallItem = new RowItem<TItem>
+        {
+            Row = this.row,
             Data = item,
-            Height = itemSize,
-            Width = this.columnWidth,
-            Left = itemsCount % this.columnCount * (this.columnWidth + this.Spacing),
-            Top = itemsCount / this.columnCount * (itemSize + this.Spacing),
+            Width = itemWidth,
+            Height = this.RowHeight,
             Spacing = this.Spacing,
         };
 
         return virtualWaterfallItem;
     }
 
-    private float GetColumnWidth()
-    {
-        var spacing = (this.columnCount - 1) * this.Spacing;
-        return (float)Math.Round((this.contentWidth - spacing) / this.columnCount, 2);
-    }
-
-    private int CalColumnCount()
-    {
-        var cWidth = this.contentWidth - this.Spacing * 2;
-        if (cWidth > this.ItemMinWidth * 2)
-        {
-            var count = Convert.ToInt32(Math.Floor(cWidth / this.ItemMinWidth));
-
-            return count;
-        }
-
-        return this.MinColumnCount;
-    }
-
     private void ReLayout()
     {
+        this.width = 0;
+        this.row = 0;
     }
 }

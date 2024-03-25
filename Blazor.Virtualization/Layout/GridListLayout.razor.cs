@@ -21,7 +21,7 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
     public int MinColumnCount { get; set; } = 1;
 
     [Parameter]
-    public string ItemHeight { get; set; }
+    public string ItemHeight { get; set; } = "Auto";
 
     private IEnumerable<PositionItem<TItem>> RenderItems { get; set; }
 

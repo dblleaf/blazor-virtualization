@@ -9,9 +9,9 @@ public interface IVirtualList<TItem> : IVirtualList
 {
     RenderFragment<TItem> ItemTemplate { get; set; }
 
-    Func<ValueTask<List<TItem>>> IncrementalItemsProvider { get; set; }
+    Func<ValueTask<IEnumerable<TItem>>> IncrementalItemsProvider { get; set; }
 
     Func<LoadedMoreArgs<TItem>, Task> OnLoadedMore { get; set; }
 
-    IList<TItem> Items { get; set; }
+    ICollection<TItem> Items { get; set; }
 }

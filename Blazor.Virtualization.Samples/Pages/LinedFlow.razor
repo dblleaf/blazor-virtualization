@@ -16,12 +16,12 @@
 </VirtualList>
 
 @code {
-    private ValueTask<List<int>> LoadDataAsync()
+    private async ValueTask<IEnumerable<int>> LoadDataAsync()
     {
+        await ValueTask.CompletedTask;
         var items = Enumerable
               .Range(0, 50)
-              .Select(o => new Random().Next(120, 300))
-              .ToList();
-        return ValueTask.FromResult(items);
+              .Select(o => new Random().Next(120, 300));
+        return items;
     }
 }

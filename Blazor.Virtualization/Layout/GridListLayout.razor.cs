@@ -81,10 +81,13 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
         this.scrollTop = args.ScrollTop;
         this.clientHeight = args.ClientHeight;
 
-        await this.RenderAsync();
-        if (args.ScrollHeight - this.spacerAfterTop < args.ClientHeight)
+        if (args.ScrollHeight > 0 && args.ScrollHeight - this.spacerAfterTop < args.ClientHeight)
         {
             await this.VirtualList.LoadMoreAsync();
+        }
+        else
+        {
+            await this.RenderAsync();
         }
     }
 

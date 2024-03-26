@@ -82,10 +82,13 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         this.scrollTop = args.ScrollTop;
         this.clientHeight = args.ClientHeight;
 
-        await this.RenderAsync();
-        if (args.ScrollHeight - this.spacerAfterTop < args.ClientHeight)
+        if (args.ScrollHeight > 0 && args.ScrollHeight - this.spacerAfterTop < args.ClientHeight)
         {
             await this.VirtualList.LoadMoreAsync();
+        }
+        else
+        {
+            await this.RenderAsync();
         }
     }
 
@@ -144,7 +147,7 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 
         this.RenderItems = this.Items
             .Skip(startIndex)
-            .Take(endIndex - startIndex);
+            .Take(endIndex - startIndex + 1);
         if (this.RenderItems?.Count() > 0)
         {
             this.spacerBeforeHeight = this.RenderItems.GroupBy(o => o.Left, o => o.Top).Select(o => o.Min()).Max();

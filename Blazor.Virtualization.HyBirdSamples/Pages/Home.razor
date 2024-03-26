@@ -1,0 +1,33 @@
+﻿@page "/"
+
+<div style="height:900px;overflow:hidden;overflow-y:auto">
+    <VirtualList TItem="File"
+                 IncrementalItemsProvider="@this.LoadDataAsync">
+        <Layout>
+            <WaterfallLayout VirtualList="context"
+                             Spacing="12"
+                             HeightCalculator="(o,w)=>o.Height*w/o.Width"></WaterfallLayout>
+        </Layout>
+        <ItemTemplate>
+            <div style="height:100%;background-color:#aaccee;">
+                <div>@context.Width</div>
+                <div>@context.Height</div>
+            </div>
+        </ItemTemplate>
+    </VirtualList>
+</div>
+@code {
+    private async ValueTask<IEnumerable<File>> LoadDataAsync()
+    {
+        var random = new Random();
+        await Task.Delay(random.Next(200, 500));
+        var items = Enumerable
+              .Range(0, 50)
+              .Select(o => new File
+                  {
+                      Width = random.Next(200, 300),
+                      Height = random.Next(200, 400),
+                  });
+        return items;
+    }
+}

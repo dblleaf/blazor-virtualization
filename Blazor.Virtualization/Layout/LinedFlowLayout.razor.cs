@@ -80,10 +80,13 @@ public partial class LinedFlowLayout<TItem> : ComponentBase, ILayout<TItem>
         this.scrollTop = args.ScrollTop;
         this.clientHeight = args.ClientHeight;
 
-        await this.RenderAsync();
-        if (args.ScrollHeight - this.containerBottom < 200)
+        if (args.ScrollHeight > 0 && args.ScrollHeight - this.containerBottom < 200)
         {
             await this.VirtualList.LoadMoreAsync();
+        }
+        else
+        {
+            await this.RenderAsync();
         }
     }
 

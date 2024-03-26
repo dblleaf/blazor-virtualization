@@ -26,7 +26,7 @@ public partial class VirtualList<TItem>
 
         if (firstCallback && this.IncrementalItemsProvider != null)
         {
-            await this.LoadMoreAsync();
+            await this.LoadMoreItemsAsync(firstCallback);
         }
     }
 
@@ -56,6 +56,16 @@ public partial class VirtualList<TItem>
             return;
         }
 
+        await this.LoadMoreItemsAsync();
+    }
+
+    private async Task LoadMoreItemsAsync(bool first = false)
+    {
+        if (this.IncrementalItemsProvider == null)
+        {
+            return;
+        }
+
         var tokenSource = new CancellationTokenSource();
         var token = tokenSource.Token;
         var result = await this.IncrementalItemsProvider();
@@ -70,6 +80,7 @@ public partial class VirtualList<TItem>
             await this.OnLoadedMore?.Invoke(new LoadedMoreArgs<TItem>
             {
                 Items = result,
+                First = first,
             });
         }
     }

@@ -87,10 +87,13 @@ public partial class LinedFlowLayout<TItem> : ComponentBase, ILayout<TItem>
         }
     }
 
-    private Task OnLoadedMoreAsync(LoadedMoreArgs<TItem> args)
+    private async Task OnLoadedMoreAsync(LoadedMoreArgs<TItem> args)
     {
         this.AddItems(args.Items);
-        return Task.CompletedTask;
+        if (this.Items?.Any() == true)
+        {
+            await this.RenderAsync();
+        }
     }
 
     private async Task RenderAsync()

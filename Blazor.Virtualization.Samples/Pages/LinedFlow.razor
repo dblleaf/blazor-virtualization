@@ -18,7 +18,7 @@
 @code {
     private async ValueTask<IEnumerable<int>> LoadDataAsync()
     {
-        await ValueTask.CompletedTask;
+        await Task.Delay(300);
         var items = Enumerable
               .Range(0, 50)
               .Select(o => new Random().Next(120, 300));

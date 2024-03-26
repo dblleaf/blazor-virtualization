@@ -6,4 +6,6 @@ using System.Collections.Generic;
 public class LoadedMoreArgs<T> : EventArgs
 {
     public IEnumerable<T> Items { get; set; }
+
+    public bool First { get; set; }
 }

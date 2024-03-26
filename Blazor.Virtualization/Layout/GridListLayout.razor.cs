@@ -88,10 +88,13 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
         }
     }
 
-    private Task OnLoadedMoreAsync(LoadedMoreArgs<TItem> args)
+    private async Task OnLoadedMoreAsync(LoadedMoreArgs<TItem> args)
     {
         this.AddItems(args.Items);
-        return Task.CompletedTask;
+        if (this.Items?.Any() == true)
+        {
+            await this.RenderAsync();
+        }
     }
 
     private async Task RenderAsync()
@@ -116,7 +119,7 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
         if (this.RenderItems?.Count() > 0)
         {
             this.spacerBeforeHeight = this.RenderItems.GroupBy(o => o.Left, o => o.Top).Select(o => o.Min()).Max();
-            this.spacerAfterTop = this.RenderItems.GroupBy(o => o.Left, o => o.Top + o.Height).Select(o => o.Max()).Min();
+            this.spacerAfterTop = this.RenderItems.Max(o => o.Top + o.Height);
         }
 
         await this.ChangeStateAsync();

@@ -15,7 +15,7 @@ PM> Install-Package Blazor.Virtualization
 ```
 #### 3 PackageReference
 ```xml
-<PackageReference Include="Blazor.Virtualization" Version="1.0.0" />
+<PackageReference Include="Blazor.Virtualization" Version="1.0.2" />
 ````
 
 ### Quick start
@@ -74,13 +74,13 @@ PM> Install-Package Blazor.Virtualization
 </VirtualList>
 
 @code {
-    private ValueTask<List<int>> LoadDataAsync()
+    private async ValueTask<IEnumerable<int>> LoadDataAsync()
     {
+        await Task.Delay(500);
         var items = Enumerable
               .Range(0, 50)
-              .Select(o => new Random().Next(120, 600))
-              .ToList();
-        return ValueTask.FromResult(items);
+              .Select(o => new Random().Next(120, 600));
+        return items;
     }
 }
 ```
@@ -103,13 +103,13 @@ PM> Install-Package Blazor.Virtualization
 </VirtualList>
 
 @code {
-    private ValueTask<List<int>> LoadDataAsync()
+    private async ValueTask<IEnumerable<int>> LoadDataAsync()
     {
+        await Task.Delay(300);
         var items = Enumerable
-            .Range(0, 50)
-            .Select(o => new Random().Next(120, 600))
-            .ToList();
-        return ValueTask.FromResult(items);
+              .Range(0, 50)
+              .Select(o => new Random().Next(120, 600));
+        return items;
     }
 }
 ```
@@ -132,13 +132,13 @@ PM> Install-Package Blazor.Virtualization
 </VirtualList>
 
 @code {
-    private ValueTask<List<int>> LoadDataAsync()
+    private async ValueTask<IEnumerable<int>> LoadDataAsync()
     {
+        await Task.Delay(300);
         var items = Enumerable
               .Range(0, 50)
-              .Select(o => new Random().Next(120, 300))
-              .ToList();
-        return ValueTask.FromResult(items);
+              .Select(o => new Random().Next(120, 300));
+        return items;
     }
 }
 ```

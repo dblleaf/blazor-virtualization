@@ -46,6 +46,7 @@ const init = (dotNetHelper: DotNet.DotNetObject, spacerBefore: HTMLElement, spac
   const container = spacerBefore.parentElement;
   invokeInit(dotNetHelper, container);
   scrollContainer = findClosestScrollContainer(container);
+
   const intersectionObserver = new IntersectionObserver(intersectionCallback, {
     root: scrollContainer,
     rootMargin: `50px`,

@@ -15,7 +15,7 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
     public float Spacing { get; set; } = 8;
 
     [Parameter]
-    public float ItemMinWidth { get; set; } = 200;
+    public float MinItemWidth { get; set; } = 200;
 
     [Parameter]
     public int MinColumnCount { get; set; } = 1;
@@ -209,9 +209,9 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
     private int CalColumnCount()
     {
         var cWidth = this.contentWidth - this.Spacing * 2;
-        if (cWidth > this.ItemMinWidth * 2)
+        if (cWidth > this.MinItemWidth * 2)
         {
-            var count = Convert.ToInt32(Math.Floor(cWidth / this.ItemMinWidth));
+            var count = Convert.ToInt32(Math.Floor(cWidth / this.MinItemWidth));
 
             return count;
         }

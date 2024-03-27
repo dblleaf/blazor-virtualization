@@ -160,7 +160,7 @@ PM> Install-Package Blazor.Virtualization
 |------------------|---------------------------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | HeightCalculator | Func<TItem, float, float> | null          | The calculator of item height. <br>The first parameter is the data item. <br>And then second parameter is the ItemWidth. <br>You can calculate the height based on these two parameters. |
 | Spacing          | float                     | 8             | The spacing of items.                                                                                                                                                                    |
-| ItemMinWidth     | float                     | 200           | The minimum width of the item.                                                                                                                                                           |
+| MinItemWidth     | float                     | 200           | The minimum width of the item.                                                                                                                                                           |
 | MinColumnCount   | float                     | 1             | The minimum column count of the component.                                                                                                                                               |
 
 #### GridListLayout
@@ -168,7 +168,7 @@ PM> Install-Package Blazor.Virtualization
 | Name           | Type   | Default value | Description                                                                                                 |
 |----------------|--------|---------------|-------------------------------------------------------------------------------------------------------------|
 | Spacing        | float  | 8             | The spacing of items.                                                                                       |
-| ItemMinWidth   | float  | 200           | The minimum width of the item.                                                                              |
+| MinItemWidth   | float  | 200           | The minimum width of the item.                                                                              |
 | MinColumnCount | float  | 1             | The minimum column count of the component.                                                                  |
 | ItemHeight     | string | Auto          | The height of all the items. If the value is "Auto" or other non-numeric type, the value will be ItemWidth. |
 

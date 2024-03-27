@@ -18,10 +18,13 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
     public float Spacing { get; set; } = 8;
 
     [Parameter]
-    public float ItemMinWidth { get; set; } = 200;
+    public float MinItemWidth { get; set; } = 200;
 
     [Parameter]
     public int MinColumnCount { get; set; } = 1;
+
+    [Parameter]
+    public int MaxItemHeight { get; set; } = 580;
 
     private IEnumerable<PositionItem<TItem>> RenderItems { get; set; }
 
@@ -104,16 +107,21 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
     private PositionItem<TItem> ToPositionItem(TItem item)
     {
         var colomnIdex = this.GetColumnIndex();
-        var itemSize = 50f;
+        var itemHeight = 50f;
         if (this.HeightCalculator != null)
         {
-            itemSize = this.HeightCalculator(item, this.columnWidth);
+            itemHeight = this.HeightCalculator(item, this.columnWidth);
+        }
+
+        if (itemHeight > this.MaxItemHeight)
+        {
+            itemHeight = this.MaxItemHeight;
         }
 
         var virtualWaterfallItem = new PositionItem<TItem>
         {
             Data = item,
-            Height = itemSize,
+            Height = itemHeight,
             Width = this.columnWidth,
             Left = colomnIdex * (this.columnWidth + this.Spacing),
             Top = this.columnsTop[colomnIdex],
@@ -212,10 +220,10 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 
     private int CalColumnCount()
     {
-        var cWidth = this.contentWidth - this.Spacing * 2;
-        if (cWidth > this.ItemMinWidth * 2)
+        var cWidth = this.contentWidth;
+        if (cWidth > this.MinItemWidth * 2)
         {
-            var count = Convert.ToInt32(Math.Floor(cWidth / this.ItemMinWidth));
+            var count = Convert.ToInt32(Math.Floor((cWidth + this.Spacing) / (this.MinItemWidth + this.Spacing)));
 
             return count;
         }

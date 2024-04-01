@@ -8,7 +8,9 @@ public class RowItem<T>
 
     public float Height { get; set; }
 
-    public float Spacing { get; set; }
+    public float HorizontalSpacing { get; set; }
+
+    public float VerticalSpacing { get; set; }
 
     public T Data { get; set; }
 
@@ -16,6 +18,7 @@ public class RowItem<T>
        Style.Create()
             .Add("min-width", this.Width + "px")
             .Add("height", this.Height + "px")
-            .Add("margin", (this.Spacing / 2) + "px")
+            .Add("margin-bottom", this.VerticalSpacing + "px")
+            .Add("margin-left", this.HorizontalSpacing + "px", () => this.HorizontalSpacing != 0)
             .Add("background-color", "#eca");
 }

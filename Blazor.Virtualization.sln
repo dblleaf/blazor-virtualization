@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Virtualization", "Bl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Virtualization.WasmSamples", "Blazor.Virtualization.WasmSamples\Blazor.Virtualization.WasmSamples.csproj", "{EC96DDBC-91EA-4270-83B0-0FC7BB317CC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor.Virtualization.HyBirdSamples", "Blazor.Virtualization.HyBirdSamples\Blazor.Virtualization.HyBirdSamples.csproj", "{F40AE82E-BA95-4C2F-888E-8997196BADA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Virtualization.HyBirdSamples", "Blazor.Virtualization.HyBirdSamples\Blazor.Virtualization.HyBirdSamples.csproj", "{F40AE82E-BA95-4C2F-888E-8997196BADA2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +15,8 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B1AFD019-896E-43B7-B9C2-90E47310849C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B1AFD019-896E-43B7-B9C2-90E47310849C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1AFD019-896E-43B7-B9C2-90E47310849C}.Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{B1AFD019-896E-43B7-B9C2-90E47310849C}.Debug|Any CPU.Build.0 = Release|Any CPU
 		{B1AFD019-896E-43B7-B9C2-90E47310849C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1AFD019-896E-43B7-B9C2-90E47310849C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EC96DDBC-91EA-4270-83B0-0FC7BB317CC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

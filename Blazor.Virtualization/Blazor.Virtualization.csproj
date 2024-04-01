@@ -10,7 +10,7 @@
     <PackageProjectUrl>https://github.com/dblleaf/blazor-virtualization</PackageProjectUrl>
     <Description>This is a virtual list component packaged with blazor.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>1.0.2</Version>
+    <Version>1.0.4</Version>
   </PropertyGroup>
 
   <ItemGroup Condition="$(TargetFramework) == 'net5'">

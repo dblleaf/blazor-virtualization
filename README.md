@@ -15,7 +15,7 @@ PM> Install-Package Blazor.Virtualization
 ```
 #### 3 PackageReference
 ```xml
-<PackageReference Include="Blazor.Virtualization" Version="1.0.2" />
+<PackageReference Include="Blazor.Virtualization" Version="1.0.4" />
 ````
 
 ### Quick start
@@ -40,8 +40,9 @@ PM> Install-Package Blazor.Virtualization
 <VirtualList TItem="int" Items="data">
     <Layout>
         <WaterfallLayout VirtualList="context"
-                        Spacing="24"
-                        HeightCalculator="(o,_)=>o"></WaterfallLayout>
+                         HorizontalSpacing="12"
+                         VerticalSpacing="24"
+                         HeightCalculator="(o,_)=>o"></WaterfallLayout>
     </Layout>
     <ItemTemplate>
         <div style="height:100%;background-color:#aaccee;">@context</div>
@@ -65,7 +66,8 @@ PM> Install-Package Blazor.Virtualization
              IncrementalItemsProvider="@this.LoadDataAsync">
     <Layout>
         <WaterfallLayout VirtualList="context"
-                         Spacing="12"
+                         HorizontalSpacing="12"
+                         VerticalSpacing="24"
                          HeightCalculator="(o,_)=>o"></WaterfallLayout>
     </Layout>
     <ItemTemplate>
@@ -91,11 +93,12 @@ PM> Install-Package Blazor.Virtualization
 
 ```razor
 <VirtualList TItem="int"
-            IncrementalItemsProvider="@this.LoadDataAsync">
+             IncrementalItemsProvider="@this.LoadDataAsync">
     <Layout>
         <GridListLayout VirtualList="context"
-                        Spacing="12"
-                        ItemHeight="Auto"></GridListLayout>
+                        HorizontalSpacing="12"
+                        VerticalSpacing="24"
+                        ItemWidth="236"></GridListLayout>
     </Layout>
     <ItemTemplate>
         <div style="height:100%;background-color:#aaccee;">@context</div>
@@ -123,7 +126,8 @@ PM> Install-Package Blazor.Virtualization
              IncrementalItemsProvider="@this.LoadDataAsync">
     <Layout>
         <LinedFlowLayout VirtualList="context"
-                         Spacing="8"
+                         HorizontalSpacing="8"
+                         VerticalSpacing="24"
                          WidthCalculator="o=>o*1f"></LinedFlowLayout>
     </Layout>
     <ItemTemplate>
@@ -156,26 +160,31 @@ PM> Install-Package Blazor.Virtualization
 
 #### WaterafallLayout
 
-| Name             | Type                      | Default value | Description                                                                                                                                                                              |
-|------------------|---------------------------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| HeightCalculator | Func<TItem, float, float> | null          | The calculator of item height. <br>The first parameter is the data item. <br>And then second parameter is the ItemWidth. <br>You can calculate the height based on these two parameters. |
-| Spacing          | float                     | 8             | The spacing of items.                                                                                                                                                                    |
-| MinItemWidth     | float                     | 200           | The minimum width of the item.                                                                                                                                                           |
-| MinColumnCount   | float                     | 1             | The minimum column count of the component.                                                                                                                                               |
+| Name              | Type                      | Default value | Description                                                                                                                                                                              |
+|-------------------|---------------------------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ItemWidth         | float                     | 0             | If this value is greater than 0, then MinItemWidth will be invalid and all items will be centered.                                                                                       |
+| HorizontalSpacing | float                     | 8             | The horizontal spacing of items.                                                                                                                                                         |
+| VerticalSpacing   | float                     | 8             | The vertical spacing of items.                                                                                                                                                           |
+| HeightCalculator  | Func<TItem, float, float> | null          | The calculator of item height. <br>The first parameter is the data item. <br>And then second parameter is the ItemWidth. <br>You can calculate the height based on these two parameters. |
+| MinItemWidth      | float                     | 200           | The minimum width of the item.                                                                                                                                                           |
+| MinColumnCount    | float                     | 1             | The minimum column count of the component.                                                                                                                                               |
 
 #### GridListLayout
 
-| Name           | Type   | Default value | Description                                                                                                 |
-|----------------|--------|---------------|-------------------------------------------------------------------------------------------------------------|
-| Spacing        | float  | 8             | The spacing of items.                                                                                       |
-| MinItemWidth   | float  | 200           | The minimum width of the item.                                                                              |
-| MinColumnCount | float  | 1             | The minimum column count of the component.                                                                  |
-| ItemHeight     | string | Auto          | The height of all the items. If the value is "Auto" or other non-numeric type, the value will be ItemWidth. |
+| Name              | Type  | Default value | Description                                                                                        |
+|-------------------|-------|---------------|----------------------------------------------------------------------------------------------------|
+| ItemWidth         | float | 0             | If this value is greater than 0, then MinItemWidth will be invalid and all items will be centered. |
+| HorizontalSpacing | float | 8             | The horizontal spacing of items.                                                                   |
+| VerticalSpacing   | float | 8             | The vertical spacing of items.                                                                     |
+| MinItemWidth      | float | 200           | The minimum width of the item.                                                                     |
+| MinColumnCount    | float | 1             | The minimum column count of the component.                                                         |
+| ItemHeight        | float | 0             | The height of all the items. If the value is greater than 0, then the height will be equal to it.  |
 
 #### LinedFlowLayout
 
-| Name            | Type               | Default value | Description                                                        |
-|-----------------|--------------------|---------------|--------------------------------------------------------------------|
-| Spacing         | float              | 8             | The spacing of items.                                              |
-| RowHeight       | float              | 200           | The height of all the rows.                                        |
-| WidthCalculator | Func<TItem, float> | null          | The calculator of the minwidth. The parameter is data of the item. |
+| Name              | Type               | Default value | Description                                                        |
+|-------------------|--------------------|---------------|--------------------------------------------------------------------|
+| HorizontalSpacing | float              | 8             | The horizontal spacing of items.                                   |
+| VerticalSpacing   | float              | 8             | The vertical spacing of items.                                     |
+| RowHeight         | float              | 200           | The height of all the rows.                                        |
+| WidthCalculator   | Func<TItem, float> | null          | The calculator of the minwidth. The parameter is data of the item. |

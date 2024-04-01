@@ -10,7 +10,9 @@ public class PositionItem<T>
 
     public float Width { get; set; }
 
-    public float Spacing { get; set; }
+    public float HorizontalSpacing { get; set; } = 8;
+
+    public float VerticalSpacing { get; set; } = 8;
 
     public T Data { get; set; }
 

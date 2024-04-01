@@ -12,7 +12,10 @@ public partial class LinedFlowLayout<TItem> : ComponentBase, ILayout<TItem>
     public IVirtualList<TItem> VirtualList { get; set; }
 
     [Parameter]
-    public float Spacing { get; set; } = 8;
+    public float HorizontalSpacing { get; set; } = 8;
+
+    [Parameter]
+    public float VerticalSpacing { get; set; } = 8;
 
     [Parameter]
     public float RowHeight { get; set; } = 200;
@@ -102,8 +105,8 @@ public partial class LinedFlowLayout<TItem> : ComponentBase, ILayout<TItem>
     private async Task RenderAsync()
     {
         var endIndex = this.Items.Count;
-        var minRow = (float)Math.Floor((this.scrollTop - this.clientHeight) / (this.RowHeight + this.Spacing));
-        var maxRow = (float)Math.Ceiling((this.scrollTop + this.clientHeight * 2) / (this.RowHeight + this.Spacing));
+        var minRow = (float)Math.Floor((this.scrollTop - this.clientHeight) / (this.RowHeight + this.VerticalSpacing));
+        var maxRow = (float)Math.Ceiling((this.scrollTop + this.clientHeight * 2) / (this.RowHeight + this.VerticalSpacing));
         if (minRow < 0)
         {
             minRow = 0;
@@ -114,8 +117,8 @@ public partial class LinedFlowLayout<TItem> : ComponentBase, ILayout<TItem>
             maxRow = this.row;
         }
 
-        this.containerTop = minRow * (this.RowHeight + this.Spacing);
-        this.containerBottom = (maxRow + 1) * (this.RowHeight + this.Spacing);
+        this.containerTop = minRow * (this.RowHeight + this.VerticalSpacing);
+        this.containerBottom = (maxRow + 1) * (this.RowHeight + this.VerticalSpacing);
         this.RenderItems = this.Items
             .Where(o => o.Row >= minRow && o.Row <= maxRow);
 
@@ -128,7 +131,7 @@ public partial class LinedFlowLayout<TItem> : ComponentBase, ILayout<TItem>
         this.height = 0;
         if (last != null)
         {
-            this.height = (last.Row + 1) * (this.RowHeight + this.Spacing);
+            this.height = (last.Row + 1) * (this.RowHeight + this.VerticalSpacing);
         }
 
         await this.VirtualList.OnStateChanged(
@@ -177,21 +180,29 @@ public partial class LinedFlowLayout<TItem> : ComponentBase, ILayout<TItem>
             itemWidth = this.WidthCalculator(item);
         }
 
-        if (this.width + itemWidth + this.Spacing > this.contentWidth)
+        var horizontalSpacing = this.HorizontalSpacing;
+        if (this.width + itemWidth + this.HorizontalSpacing > this.contentWidth)
         {
             this.width = 0;
             this.row++;
+            horizontalSpacing = 0f;
         }
 
-        this.width += itemWidth + this.Spacing;
+        if (this.width == 0)
+        {
+            horizontalSpacing = 0f;
+        }
+
         var virtualWaterfallItem = new RowItem<TItem>
         {
             Row = this.row,
             Data = item,
             Width = itemWidth,
             Height = this.RowHeight,
-            Spacing = this.Spacing,
+            VerticalSpacing = this.VerticalSpacing,
+            HorizontalSpacing = horizontalSpacing,
         };
+        this.width += itemWidth + this.HorizontalSpacing;
 
         return virtualWaterfallItem;
     }

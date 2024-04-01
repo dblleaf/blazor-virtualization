@@ -15,7 +15,10 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
     public Func<TItem, float, float> HeightCalculator { get; set; }
 
     [Parameter]
-    public float Spacing { get; set; } = 8;
+    public float HorizontalSpacing { get; set; } = 8;
+
+    [Parameter]
+    public float VerticalSpacing { get; set; } = 8;
 
     [Parameter]
     public float MinItemWidth { get; set; } = 200;
@@ -25,6 +28,9 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 
     [Parameter]
     public int MaxItemHeight { get; set; } = 580;
+
+    [Parameter]
+    public float ItemWidth { get; set; }
 
     private IEnumerable<PositionItem<TItem>> RenderItems { get; set; }
 
@@ -123,12 +129,13 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
             Data = item,
             Height = itemHeight,
             Width = this.columnWidth,
-            Left = colomnIdex * (this.columnWidth + this.Spacing),
+            Left = this.GetVerticalMargin() + colomnIdex * (this.columnWidth + this.HorizontalSpacing),
             Top = this.columnsTop[colomnIdex],
-            Spacing = this.Spacing,
+            HorizontalSpacing = this.HorizontalSpacing,
+            VerticalSpacing = this.VerticalSpacing,
         };
 
-        this.columnsTop[colomnIdex] = virtualWaterfallItem.Top + virtualWaterfallItem.Height + this.Spacing;
+        this.columnsTop[colomnIdex] = virtualWaterfallItem.Top + virtualWaterfallItem.Height + this.VerticalSpacing;
         return virtualWaterfallItem;
     }
 
@@ -214,20 +221,41 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 
     private float GetColumnWidth()
     {
-        var spacing = (this.columnCount - 1) * this.Spacing;
+        if (this.ItemWidth > 0)
+        {
+            return this.ItemWidth;
+        }
+
+        var spacing = (this.columnCount - 1) * this.HorizontalSpacing;
         return (float)Math.Round((this.contentWidth - spacing) / this.columnCount, 2);
     }
 
     private int CalColumnCount()
     {
         var cWidth = this.contentWidth;
-        if (cWidth > this.MinItemWidth * 2)
+        var itemWidth = this.ItemWidth;
+        if (itemWidth <= 0)
         {
-            var count = Convert.ToInt32(Math.Floor((cWidth + this.Spacing) / (this.MinItemWidth + this.Spacing)));
+            itemWidth = this.MinItemWidth;
+        }
+
+        if (cWidth > itemWidth * 2)
+        {
+            var count = Convert.ToInt32(Math.Floor((cWidth + this.HorizontalSpacing) / (itemWidth + this.HorizontalSpacing)));
 
             return count;
         }
 
         return this.MinColumnCount;
+    }
+
+    private float GetVerticalMargin()
+    {
+        if (this.ItemWidth <= 0)
+        {
+            return 0;
+        }
+
+        return (this.contentWidth - (this.columnWidth * this.columnCount) - (this.HorizontalSpacing * (this.columnCount - 1))) / 2;
     }
 }

@@ -1,5 +1,6 @@
 ﻿namespace Blazor.Virtualization;
 
+using System;
 using System.Text;
 
 public class Style
@@ -59,8 +60,16 @@ public class Style
         return this;
     }
 
-    public Style Add(string styleName, string style)
+    public Style Add(string styleName, string style, Func<bool> condition = null)
     {
+        if (condition != null)
+        {
+            if (condition.Invoke() != true)
+            {
+                return this;
+            }
+        }
+
         if (!string.IsNullOrWhiteSpace(styleName) && !string.IsNullOrWhiteSpace(style))
         {
             this.styleStringBuilder.Append($"{styleName}: {style}; ");

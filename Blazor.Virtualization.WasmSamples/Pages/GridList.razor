@@ -7,8 +7,9 @@
              IncrementalItemsProvider="@this.LoadDataAsync">
     <Layout>
         <GridListLayout VirtualList="context"
-                        Spacing="12"
-                        ItemHeight="Auto"></GridListLayout>
+                        HorizontalSpacing="12"
+                        VerticalSpacing="24"
+                        ItemWidth="236"></GridListLayout>
     </Layout>
     <ItemTemplate>
         <div style="height:100%;background-color:#aaccee;">@context</div>

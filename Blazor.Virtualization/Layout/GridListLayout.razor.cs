@@ -12,7 +12,10 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
     public IVirtualList<TItem> VirtualList { get; set; }
 
     [Parameter]
-    public float Spacing { get; set; } = 8;
+    public float HorizontalSpacing { get; set; } = 8;
+
+    [Parameter]
+    public float VerticalSpacing { get; set; } = 8;
 
     [Parameter]
     public float MinItemWidth { get; set; } = 200;
@@ -21,7 +24,10 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
     public int MinColumnCount { get; set; } = 1;
 
     [Parameter]
-    public string ItemHeight { get; set; } = "Auto";
+    public float ItemHeight { get; set; }
+
+    [Parameter]
+    public float ItemWidth { get; set; }
 
     private IEnumerable<PositionItem<TItem>> RenderItems { get; set; }
 
@@ -134,7 +140,7 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
         this.height = 0;
         if (last != null)
         {
-            this.height = last.Top + last.Spacing;
+            this.height = last.Top + last.VerticalSpacing;
         }
 
         await this.VirtualList.OnStateChanged(
@@ -178,23 +184,21 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
     private PositionItem<TItem> ToPositionItem(TItem item)
     {
         var itemsCount = this.Items.Count;
-        var itemSize = this.columnWidth;
-        if (string.IsNullOrWhiteSpace(this.ItemHeight))
+        var itemHeight = this.ItemHeight;
+        if (this.ItemHeight <= 0)
         {
-            if (float.TryParse(this.ItemHeight, out float itemHeight))
-            {
-                itemSize = itemHeight;
-            }
+            itemHeight = this.columnWidth;
         }
 
         var virtualWaterfallItem = new PositionItem<TItem>
         {
             Data = item,
-            Height = itemSize,
+            Height = itemHeight,
             Width = this.columnWidth,
-            Left = itemsCount % this.columnCount * (this.columnWidth + this.Spacing),
-            Top = itemsCount / this.columnCount * (itemSize + this.Spacing),
-            Spacing = this.Spacing,
+            Left = this.GetVerticalMargin() + itemsCount % this.columnCount * (this.columnWidth + this.HorizontalSpacing),
+            Top = itemsCount / this.columnCount * (itemHeight + this.VerticalSpacing),
+            HorizontalSpacing = this.HorizontalSpacing,
+            VerticalSpacing = this.VerticalSpacing,
         };
 
         return virtualWaterfallItem;
@@ -202,16 +206,27 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
 
     private float GetColumnWidth()
     {
-        var spacing = (this.columnCount - 1) * this.Spacing;
+        if (this.ItemWidth > 0)
+        {
+            return this.ItemWidth;
+        }
+
+        var spacing = (this.columnCount - 1) * this.HorizontalSpacing;
         return (float)Math.Round((this.contentWidth - spacing) / this.columnCount, 2);
     }
 
     private int CalColumnCount()
     {
-        var cWidth = this.contentWidth - this.Spacing * 2;
+        var cWidth = this.contentWidth - this.HorizontalSpacing * 2;
+        var itemWidth = this.ItemWidth;
+        if (itemWidth <= 0)
+        {
+            itemWidth = this.MinItemWidth;
+        }
+
         if (cWidth > this.MinItemWidth * 2)
         {
-            var count = Convert.ToInt32(Math.Floor(cWidth / this.MinItemWidth));
+            var count = Convert.ToInt32(Math.Floor(cWidth / itemWidth));
 
             return count;
         }
@@ -221,5 +236,15 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
 
     private void ReLayout()
     {
+    }
+
+    private float GetVerticalMargin()
+    {
+        if (this.ItemWidth <= 0)
+        {
+            return 0;
+        }
+
+        return (this.contentWidth - (this.columnWidth * this.columnCount) - (this.HorizontalSpacing * (this.columnCount - 1))) / 2;
     }
 }

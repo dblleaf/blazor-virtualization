@@ -5,7 +5,8 @@
                  IncrementalItemsProvider="@this.LoadDataAsync">
         <Layout>
             <WaterfallLayout VirtualList="context"
-                             Spacing="12"
+                             ItemWidth="240"
+                             VerticalSpacing="24"
                              HeightCalculator="(o,w)=>o.Height*w/o.Width"></WaterfallLayout>
         </Layout>
         <ItemTemplate>

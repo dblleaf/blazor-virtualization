@@ -9,12 +9,12 @@ internal class VirtualListJsInterop : IAsyncDisposable
 {
     private const string JsFunctionsPrefix = "VirtualList";
     private readonly IJSRuntime jsRuntime;
-    private readonly IVirtualList owner;
+    private readonly IVirtualListAdapter owner;
     private readonly Lazy<Task<IJSObjectReference>> moduleTask;
 
     private DotNetObjectReference<VirtualListJsInterop> dotNetObject;
 
-    public VirtualListJsInterop(IJSRuntime jsRuntime, IVirtualList owner)
+    public VirtualListJsInterop(IJSRuntime jsRuntime, IVirtualListAdapter owner)
     {
         this.owner = owner;
         this.jsRuntime = jsRuntime;

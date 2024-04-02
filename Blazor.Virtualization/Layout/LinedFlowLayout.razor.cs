@@ -9,9 +9,6 @@ using System.Linq;
 public partial class LinedFlowLayout<TItem> : ComponentBase, ILayout<TItem>
 {
     [Parameter]
-    public IVirtualList<TItem> VirtualList { get; set; }
-
-    [Parameter]
     public float HorizontalSpacing { get; set; } = 8;
 
     [Parameter]
@@ -23,7 +20,13 @@ public partial class LinedFlowLayout<TItem> : ComponentBase, ILayout<TItem>
     [Parameter]
     public Func<TItem, float> WidthCalculator { get; set; }
 
-    private IEnumerable<RowItem<TItem>> RenderItems { get; set; }
+    [Parameter]
+    public IVirtualList<TItem> VirtualList { get; set; }
+
+    [CascadingParameter(Name = "VirtualListAdapter")]
+    private IVirtualListAdapter<TItem> Adapter { get; set; }
+
+    private ICollection<RowItem<TItem>> RenderItems { get; set; }
 
     private List<RowItem<TItem>> Items { get; } = [];
 
@@ -56,12 +59,13 @@ public partial class LinedFlowLayout<TItem> : ComponentBase, ILayout<TItem>
 
     protected override void OnParametersSet()
     {
-        if (this.VirtualList != null)
+        if (this.Adapter != null)
         {
-            this.VirtualList.OnContentWidthChange += this.OnContentWidthChangeAsync;
-            this.VirtualList.OnSpacerBeforeVisible += this.OnSpacerVisibleAsync;
-            this.VirtualList.OnSpacerAfterVisible += this.OnSpacerVisibleAsync;
-            this.VirtualList.OnLoadedMore += this.OnLoadedMoreAsync;
+            this.Adapter.OnContentWidthChange += this.OnContentWidthChangeAsync;
+            this.Adapter.OnSpacerBeforeVisible += this.OnSpacerVisibleAsync;
+            this.Adapter.OnSpacerAfterVisible += this.OnSpacerVisibleAsync;
+            this.Adapter.OnLoadedMore += this.OnLoadedMoreAsync;
+            this.Adapter.OnRefresh += this.OnRefreshAsync;
         }
 
         base.OnParametersSet();
@@ -102,6 +106,12 @@ public partial class LinedFlowLayout<TItem> : ComponentBase, ILayout<TItem>
         }
     }
 
+    private Task OnRefreshAsync()
+    {
+        this.ReLayout();
+        return Task.CompletedTask;
+    }
+
     private async Task RenderAsync()
     {
         var endIndex = this.Items.Count;
@@ -120,7 +130,7 @@ public partial class LinedFlowLayout<TItem> : ComponentBase, ILayout<TItem>
         this.containerTop = minRow * (this.RowHeight + this.VerticalSpacing);
         this.containerBottom = (maxRow + 1) * (this.RowHeight + this.VerticalSpacing);
         this.RenderItems = this.Items
-            .Where(o => o.Row >= minRow && o.Row <= maxRow);
+            .FindAll(o => o.Row >= minRow && o.Row <= maxRow);
 
         await this.ChangeStateAsync();
     }
@@ -134,7 +144,7 @@ public partial class LinedFlowLayout<TItem> : ComponentBase, ILayout<TItem>
             this.height = (last.Row + 1) * (this.RowHeight + this.VerticalSpacing);
         }
 
-        await this.VirtualList.OnStateChanged(
+        await this.Adapter.OnStateChanged(
             this.SpacerBeforeStyle,
             this.SpacerAfterStyle,
             this.HeighterStyle);
@@ -209,6 +219,10 @@ public partial class LinedFlowLayout<TItem> : ComponentBase, ILayout<TItem>
 
     private void ReLayout()
     {
+        this.containerTop = 0;
+        this.containerBottom = 0;
+        this.height = 0;
+        this.Items.Clear();
         this.width = 0;
         this.row = 0;
     }

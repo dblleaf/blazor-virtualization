@@ -67,6 +67,7 @@ const init = (dotNetHelper: DotNet.DotNetObject, spacerBefore: HTMLElement, spac
     mutationObserverBefore,
     mutationObserverAfter,
     resizeObserver,
+    scrollContainer,
   };
 
   function createSpacerMutationObserver(spacer: Element): MutationObserver {
@@ -88,7 +89,6 @@ const init = (dotNetHelper: DotNet.DotNetObject, spacerBefore: HTMLElement, spac
       const containerHeight = (scrollContainer || document.documentElement).clientHeight;
       const scrollTop = (scrollContainer || document.documentElement).scrollTop;
       const scrollHeight = (scrollContainer || document.documentElement).scrollHeight;
-      console.log(scrollContainer || document.documentElement);
 
       if (entry.target == spacerBefore) {
         dotNetHelper.invokeMethodAsync('OnSpacerBeforeVisible', scrollTop, containerHeight);
@@ -110,8 +110,11 @@ const init = (dotNetHelper: DotNet.DotNetObject, spacerBefore: HTMLElement, spac
   }
 }
 
-const scrollTo = (top: number): void => {
-  if (!scrollContainer) {
+const scrollTo = (dotNetHelper: DotNet.DotNetObject, top: number): void => {
+  const { observersByDotNetObjectId, id } = getObserversMapEntry(dotNetHelper);
+  const observers = observersByDotNetObjectId[id];
+  const scrollContainer = observers.scrollContainer || document.documentElement;
+  if (scrollContainer) {
     scrollContainer.scrollTo({
       top: top,
       behavior: 'smooth',

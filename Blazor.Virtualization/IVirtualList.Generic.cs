@@ -11,7 +11,5 @@ public interface IVirtualList<TItem> : IVirtualList
 
     Func<ValueTask<IEnumerable<TItem>>> IncrementalItemsProvider { get; set; }
 
-    Func<LoadedMoreArgs<TItem>, Task> OnLoadedMore { get; set; }
-
     ICollection<TItem> Items { get; set; }
 }

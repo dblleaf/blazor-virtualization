@@ -2,8 +2,15 @@
 
 <PageTitle>Incremental Loading</PageTitle>
 <h3>Incremental Loading</h3>
-
-<VirtualList TItem="int"
+<div class="toolkit">
+    <button class="toolkit-item oi oi-arrow-top"
+            title="Back to the top"></button>
+    <button class="toolkit-item oi oi-reload"
+            title="Reload"
+            @onclick="()=>this.virtualList?.RefreshAsync()"></button>
+</div>
+<VirtualList @ref="virtualList"
+             TItem="int"
              IncrementalItemsProvider="@this.LoadDataAsync">
     <Layout>
         <WaterfallLayout VirtualList="context"
@@ -17,9 +24,11 @@
 </VirtualList>
 
 @code {
+    private VirtualList<int> virtualList;
     private async ValueTask<IEnumerable<int>> LoadDataAsync()
     {
-        await Task.Delay(500);
+        await Task.Delay(800);
+        Console.WriteLine("xxxxxxxxxxxxxxxxxxxxxxxxxx");
         var items = Enumerable
               .Range(0, 50)
               .Select(o => new Random().Next(120, 600));

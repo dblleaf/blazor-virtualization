@@ -9,9 +9,6 @@ using System.Threading.Tasks;
 public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 {
     [Parameter]
-    public IVirtualList<TItem> VirtualList { get; set; }
-
-    [Parameter]
     public Func<TItem, float, float> HeightCalculator { get; set; }
 
     [Parameter]
@@ -31,6 +28,12 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 
     [Parameter]
     public float ItemWidth { get; set; }
+
+    [Parameter]
+    public IVirtualList<TItem> VirtualList { get; set; }
+
+    [CascadingParameter(Name = "VirtualListAdapter")]
+    private IVirtualListAdapter<TItem> Adapter { get; set; }
 
     private IEnumerable<PositionItem<TItem>> RenderItems { get; set; }
 
@@ -62,12 +65,13 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 
     protected override void OnParametersSet()
     {
-        if (this.VirtualList != null)
+        if (this.Adapter != null)
         {
-            this.VirtualList.OnContentWidthChange += this.OnContentWidthChangeAsync;
-            this.VirtualList.OnSpacerBeforeVisible += this.OnSpacerVisibleAsync;
-            this.VirtualList.OnSpacerAfterVisible += this.OnSpacerVisibleAsync;
-            this.VirtualList.OnLoadedMore += this.OnLoadedMoreAsync;
+            this.Adapter.OnContentWidthChange = this.OnContentWidthChangeAsync;
+            this.Adapter.OnSpacerBeforeVisible = this.OnSpacerVisibleAsync;
+            this.Adapter.OnSpacerAfterVisible = this.OnSpacerVisibleAsync;
+            this.Adapter.OnLoadedMore = this.OnLoadedMoreAsync;
+            this.Adapter.OnRefresh = this.OnRefreshAsync;
         }
 
         base.OnParametersSet();
@@ -93,6 +97,7 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 
         if (args.ScrollHeight > 0 && args.ScrollHeight - this.spacerAfterTop < args.ClientHeight)
         {
+            Console.WriteLine("2222222222222222222");
             await this.VirtualList.LoadMoreAsync();
         }
         else
@@ -108,6 +113,12 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
         {
             await this.RenderAsync();
         }
+    }
+
+    private Task OnRefreshAsync()
+    {
+        this.ReLayout();
+        return Task.CompletedTask;
     }
 
     private PositionItem<TItem> ToPositionItem(TItem item)
@@ -141,6 +152,10 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
 
     private void ReLayout()
     {
+        this.spacerAfterTop = 0;
+        this.spacerBeforeHeight = 0;
+        this.height = 0;
+        this.Items.Clear();
         this.columnsTop = Enumerable.Range(0, this.columnCount).Select(_ => 0f).ToList();
     }
 
@@ -175,7 +190,7 @@ public partial class WaterfallLayout<TItem> : ComponentBase, ILayout<TItem>
     private async Task ChangeStateAsync()
     {
         this.height = this.columnsTop.Max();
-        await this.VirtualList.OnStateChanged(
+        await this.Adapter.OnStateChanged(
             this.SpacerBeforeStyle,
             this.SpacerAfterStyle,
             this.HeighterStyle);

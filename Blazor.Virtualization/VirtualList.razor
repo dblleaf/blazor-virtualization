@@ -1,15 +1,15 @@
 ﻿@typeparam TItem
 
 <div class="virtual-list">
-    <CascadingValue TValue="IVirtualList" Value="this" Name="VirtualList">
-        <VirtualListPane></VirtualListPane>
+    <CascadingValue TValue="IVirtualListAdapter<TItem>"
+                    Value="this.Adapter"
+                    Name="VirtualListAdapter">
+        <CascadingValue TValue="IVirtualList" Value="this" Name="VirtualList">
+            <VirtualListPane></VirtualListPane>
+        </CascadingValue>
+        @if (this.Layout != null)
+        {
+            @this.Layout(this)
+        }
     </CascadingValue>
-    @if (this.Layout != null)
-    {
-        @this.Layout(this)
-    }
-    else
-    {
-        <RepeaterLayout VirtualList="this"></RepeaterLayout>
-    }
 </div>

@@ -5,17 +5,17 @@ using System.Threading.Tasks;
 
 public interface IVirtualListAdapter
 {
-    Func<ContentWidthChangeArgs, Task> OnContentWidthChange { get; set; }
+    Func<ContentWidthChangeArgs, Task> ContentWidthChange { get; set; }
 
-    Func<SpacerVisibleArgs, Task> OnSpacerBeforeVisible { get; set; }
+    Func<SpacerVisibleArgs, Task> SpacerBeforeVisible { get; set; }
 
-    Func<SpacerVisibleArgs, Task> OnSpacerAfterVisible { get; set; }
+    Func<SpacerVisibleArgs, Task> SpacerAfterVisible { get; set; }
 
     Func<Task> OnRefresh { get; set; }
 
-    Func<Style, Style, Style, Task> OnStateChanged { get; set; }
+    Func<Style, Style, Style, Task> StateChanged { get; set; }
 
-    Func<Task> OnScrollTop { get; set; }
+    Func<float, Task> ScrollTo { get; set; }
 
     Task LoadMoreAsync();
 

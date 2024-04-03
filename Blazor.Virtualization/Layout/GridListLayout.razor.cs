@@ -6,7 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
+public partial class GridListLayout<TItem>
+    : ComponentBase, ILayout<TItem>, IAsyncDisposable
 {
     [Parameter]
     public float HorizontalSpacing { get; set; } = 8;
@@ -59,18 +60,35 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
     private float scrollTop;
     private float clientHeight;
 
-    protected override void OnParametersSet()
+    public ValueTask DisposeAsync()
     {
         if (this.Adapter != null)
         {
-            this.Adapter.OnContentWidthChange += this.OnContentWidthChangeAsync;
-            this.Adapter.OnSpacerBeforeVisible += this.OnSpacerVisibleAsync;
-            this.Adapter.OnSpacerAfterVisible += this.OnSpacerVisibleAsync;
-            this.Adapter.OnLoadedMore += this.OnLoadedMoreAsync;
-            this.Adapter.OnRefresh += this.OnRefreshAsync;
+            this.Adapter.ContentWidthChange -= this.OnContentWidthChangeAsync;
+            this.Adapter.SpacerBeforeVisible -= this.OnSpacerVisibleAsync;
+            this.Adapter.SpacerAfterVisible -= this.OnSpacerVisibleAsync;
+            this.Adapter.LoadedMore -= this.OnLoadedMoreAsync;
+            this.Adapter.OnRefresh -= this.OnRefreshAsync;
         }
 
-        base.OnParametersSet();
+        return ValueTask.CompletedTask;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && this.Adapter != null)
+        {
+            if (this.Adapter != null)
+            {
+                this.Adapter.ContentWidthChange += this.OnContentWidthChangeAsync;
+                this.Adapter.SpacerBeforeVisible += this.OnSpacerVisibleAsync;
+                this.Adapter.SpacerAfterVisible += this.OnSpacerVisibleAsync;
+                this.Adapter.LoadedMore += this.OnLoadedMoreAsync;
+                this.Adapter.OnRefresh += this.OnRefreshAsync;
+            }
+        }
+
+        base.OnAfterRender(firstRender);
     }
 
     private async Task OnContentWidthChangeAsync(ContentWidthChangeArgs args)
@@ -90,14 +108,11 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
     {
         this.scrollTop = args.ScrollTop;
         this.clientHeight = args.ClientHeight;
+        await this.RenderAsync();
 
         if (args.ScrollHeight > 0 && args.ScrollHeight - this.spacerAfterTop < args.ClientHeight)
         {
             await this.VirtualList.LoadMoreAsync();
-        }
-        else
-        {
-            await this.RenderAsync();
         }
     }
 
@@ -153,7 +168,7 @@ public partial class GridListLayout<TItem> : ComponentBase, ILayout<TItem>
             this.height = last.Top + last.VerticalSpacing;
         }
 
-        await this.Adapter.OnStateChanged(
+        await this.Adapter.StateChanged(
             this.SpacerBeforeStyle,
             this.SpacerAfterStyle,
             this.HeighterStyle);

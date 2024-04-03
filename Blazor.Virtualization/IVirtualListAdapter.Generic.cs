@@ -5,5 +5,5 @@ using System;
 
 public interface IVirtualListAdapter<T> : IVirtualListAdapter
 {
-    Func<LoadedMoreArgs<T>, Task> OnLoadedMore { get; set; }
+    Func<LoadedMoreArgs<T>, Task> LoadedMore { get; set; }
 }

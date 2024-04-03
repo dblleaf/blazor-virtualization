@@ -2,7 +2,7 @@
 
 <div style="height:900px;overflow:hidden;overflow-y:auto">
     <VirtualList TItem="File"
-                 IncrementalItemsProvider="@this.LoadDataAsync">
+                 ItemsProvider="@this.LoadDataAsync">
         <Layout>
             <WaterfallLayout VirtualList="context"
                              ItemWidth="240"

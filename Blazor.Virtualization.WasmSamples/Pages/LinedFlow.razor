@@ -3,8 +3,10 @@
 <PageTitle>Linded Flow</PageTitle>
 <h3>Linded Flow</h3>
 
-<VirtualList TItem="int"
-             IncrementalItemsProvider="@this.LoadDataAsync">
+<VirtualList @ref="virtualList"
+             TItem="int"
+             ItemsProvider="@this.LoadDataAsync"
+             @bind-ScrollTop="scrollTop">
     <Layout>
         <LinedFlowLayout VirtualList="context"
                          HorizontalSpacing="8"
@@ -15,8 +17,21 @@
         <div style="height:100%;background-color:#aaccee;">@context</div>
     </ItemTemplate>
 </VirtualList>
+<div class="toolkit">
+    @if (scrollTop > 200)
+    {
+        <button class="toolkit-item oi oi-arrow-top"
+                title="Back to the top"
+                @onclick="()=>this.virtualList?.ScrollTopAsync()"></button>
+    }
+    <button class="toolkit-item oi oi-reload"
+            title="Reload"
+            @onclick="()=>this.virtualList?.RefreshAsync()"></button>
+</div>
 
 @code {
+    private float scrollTop;
+    private VirtualList<int> virtualList;
     private async ValueTask<IEnumerable<int>> LoadDataAsync()
     {
         await Task.Delay(300);

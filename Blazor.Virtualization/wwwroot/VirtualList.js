@@ -77,7 +77,6 @@ const init = (dotNetHelper, spacerBefore, spacerAfter) => {
       else if (entry.target == spacerAfter) {
         const style = getComputedStyle(spacerAfter);
         if (parseInt(style.top.replace('px', '')) > 0) {
-          console.log('000000000000000000000000000000000');
           dotNetHelper.invokeMethodAsync('OnSpacerAfterVisible', scrollTop, scrollHeight, containerHeight);
         }
       }

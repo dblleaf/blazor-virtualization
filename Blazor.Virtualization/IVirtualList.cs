@@ -12,9 +12,13 @@ public interface IVirtualList
 
     bool IsLoading { get; }
 
+    public float ScrollTop { get; set; }
+
     RenderFragment EmptyTemplate { get; set; }
 
     Task ScrollTopAsync();
+
+    Task ScrollToAsync(float top);
 
     Task LoadMoreAsync();
 

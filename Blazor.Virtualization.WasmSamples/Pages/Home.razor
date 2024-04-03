@@ -3,7 +3,10 @@
 <PageTitle>Basic</PageTitle>
 
 <div style="height:900px;overflow:hidden;overflow-y:auto">
-    <VirtualList TItem="int" Items="data">
+    <VirtualList @ref="virtualList"
+                 TItem="int"
+                 Items="data"
+                 @bind-ScrollTop="scrollTop">
         <Layout>
             <WaterfallLayout VirtualList="context"
                              HorizontalSpacing="12"
@@ -15,7 +18,17 @@
         </ItemTemplate>
     </VirtualList>
 </div>
+<div class="toolkit">
+    @if (scrollTop > 200)
+    {
+        <button class="toolkit-item oi oi-arrow-top"
+                title="Back to the top"
+                @onclick="()=>this.virtualList?.ScrollTopAsync()"></button>
+    }
+</div>
 @code {
+    private float scrollTop;
+    private VirtualList<int> virtualList;
     private List<int> data =
       Enumerable
         .Range(0, 500)

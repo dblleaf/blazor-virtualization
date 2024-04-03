@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 public partial class VirtualList<TItem>
 {
+    private float scrollTop;
+    private bool scrollTopHasChanged;
+
     [Parameter]
     public ICollection<TItem> Items { get; set; }
 
@@ -20,5 +23,37 @@ public partial class VirtualList<TItem>
     public RenderFragment EmptyTemplate { get; set; }
 
     [Parameter]
-    public Func<ValueTask<IEnumerable<TItem>>> IncrementalItemsProvider { get; set; }
+    public Func<ValueTask<IEnumerable<TItem>>> ItemsProvider { get; set; }
+
+    [Parameter]
+    public EventCallback<float> ScrollTopChanged { get; set; }
+
+    [Parameter]
+    public float ScrollTop
+    {
+        get => this.scrollTop;
+        set
+        {
+            if (value != this.scrollTop)
+            {
+                this.scrollTop = value;
+                this.scrollTopHasChanged = true;
+            }
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (this.scrollTopHasChanged)
+        {
+            this.OnScrollTopChangeAsync(this.scrollTop);
+        }
+
+        base.OnParametersSet();
+    }
+
+    private Task OnScrollTopChangeAsync(float top)
+    {
+        return this.Adapter.ScrollTo?.Invoke(top);
+    }
 }

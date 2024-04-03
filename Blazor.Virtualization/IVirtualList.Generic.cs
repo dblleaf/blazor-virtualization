@@ -9,7 +9,7 @@ public interface IVirtualList<TItem> : IVirtualList
 {
     RenderFragment<TItem> ItemTemplate { get; set; }
 
-    Func<ValueTask<IEnumerable<TItem>>> IncrementalItemsProvider { get; set; }
+    Func<ValueTask<IEnumerable<TItem>>> ItemsProvider { get; set; }
 
     ICollection<TItem> Items { get; set; }
 }

@@ -35,7 +35,7 @@ public partial class VirtualListPane : IAsyncDisposable
     {
         if (this.Adapter != null)
         {
-            this.Adapter.OnStateChanged = (beforeStyle, afterStyle, heighterStyle) =>
+            this.Adapter.StateChanged = (beforeStyle, afterStyle, heighterStyle) =>
             {
                 this.SpacerBeforeStyle = beforeStyle ?? Style.Create();
                 this.SpacerAfterStyle = afterStyle ?? Style.Create();
@@ -45,9 +45,9 @@ public partial class VirtualListPane : IAsyncDisposable
                 return Task.CompletedTask;
             };
 
-            this.Adapter.OnScrollTop = async () =>
+            this.Adapter.ScrollTo = async (top) =>
             {
-                await this.jsInterop.ScrollTopAsync();
+                await this.jsInterop.ScrollToAsync(top);
             };
         }
     }

@@ -2,16 +2,10 @@
 
 <PageTitle>Incremental Loading</PageTitle>
 <h3>Incremental Loading</h3>
-<div class="toolkit">
-    <button class="toolkit-item oi oi-arrow-top"
-            title="Back to the top"></button>
-    <button class="toolkit-item oi oi-reload"
-            title="Reload"
-            @onclick="()=>this.virtualList?.RefreshAsync()"></button>
-</div>
 <VirtualList @ref="virtualList"
              TItem="int"
-             IncrementalItemsProvider="@this.LoadDataAsync">
+             ItemsProvider="@this.LoadDataAsync"
+             @bind-ScrollTop="scrollTop">
     <Layout>
         <WaterfallLayout VirtualList="context"
                          HorizontalSpacing="12"
@@ -22,13 +16,24 @@
         <div style="height:100%;background-color:#aaccee;">@context</div>
     </ItemTemplate>
 </VirtualList>
-
+<div class="toolkit">
+    @if (scrollTop > 200)
+    {
+        <button class="toolkit-item oi oi-arrow-top"
+                title="Back to the top"
+                @onclick="()=>scrollTop=0"></button>
+    }
+    <button class="toolkit-item oi oi-reload"
+            title="Reload"
+            @onclick="()=>this.virtualList?.RefreshAsync()"></button>
+</div>
 @code {
+    private float scrollTop;
     private VirtualList<int> virtualList;
     private async ValueTask<IEnumerable<int>> LoadDataAsync()
     {
-        await Task.Delay(800);
-        Console.WriteLine("xxxxxxxxxxxxxxxxxxxxxxxxxx");
+        await Task.Delay(200);
+
         var items = Enumerable
               .Range(0, 50)
               .Select(o => new Random().Next(120, 600));

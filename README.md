@@ -4,21 +4,21 @@ This is a virtual list component packaged with blazor. Built in layouts such as 
 
 *However, the size of the data items for WaterfallLayout and LinedFlowLayout must be known, or can be calculated based on the data items. So the two layouts don't support auto-sizing items.*
 
-### Installation
-##### 1 .NET CLI
+## Installation
+### 1 .NET CLI
 ```shell
 dotnet add package Blazor.Virtualization
 ```
-##### 2 Package Manager
+### 2 Package Manager
 ```shell
 PM> Install-Package Blazor.Virtualization
 ```
-#### 3 PackageReference
+### 3 PackageReference
 ```xml
 <PackageReference Include="Blazor.Virtualization" Version="1.0.4" />
 ````
 
-### Quick start
+## Quick start
 1. Add the package to project.
 2. Add the style reference.
     ```html
@@ -31,13 +31,16 @@ PM> Install-Package Blazor.Virtualization
     ```
 4. Create razor page or component to use the *VirtualList*.
 
-### Samples
+## Samples
 
 <details open>
 <summary>1. WaterfallLayout.</summary>
 
 ```razor
-<VirtualList TItem="int" Items="data">
+<VirtualList @ref="virtualList"
+             TItem="int"
+             Items="data"
+             @bind-ScrollTop="scrollTop">
     <Layout>
         <WaterfallLayout VirtualList="context"
                          HorizontalSpacing="12"
@@ -48,9 +51,19 @@ PM> Install-Package Blazor.Virtualization
         <div style="height:100%;background-color:#aaccee;">@context</div>
     </ItemTemplate>
 </VirtualList>
+<div class="toolkit">
+    @if (scrollTop > 200)
+    {
+        <button class="toolkit-item oi oi-arrow-top"
+                title="Back to the top"
+                @onclick="()=>this.virtualList?.ScrollTopAsync()"></button>
+    }
+</div>
 @code {
+    private float scrollTop;
+    private VirtualList<int> virtualList;
     private List<int> data =
-    Enumerable
+      Enumerable
         .Range(0, 500)
         .Select(o => new Random().Next(120, 300))
         .ToList();
@@ -62,8 +75,10 @@ PM> Install-Package Blazor.Virtualization
 <summary>2. Incremental loading WaterafllLayout.</summary>
 
 ```razor
-<VirtualList TItem="int"
-             IncrementalItemsProvider="@this.LoadDataAsync">
+<VirtualList @ref="virtualList"
+             TItem="int"
+             ItemsProvider="@this.LoadDataAsync"
+             @bind-ScrollTop="scrollTop">
     <Layout>
         <WaterfallLayout VirtualList="context"
                          HorizontalSpacing="12"
@@ -74,11 +89,24 @@ PM> Install-Package Blazor.Virtualization
         <div style="height:100%;background-color:#aaccee;">@context</div>
     </ItemTemplate>
 </VirtualList>
-
+<div class="toolkit">
+    @if (scrollTop > 200)
+    {
+        <button class="toolkit-item oi oi-arrow-top"
+                title="Back to the top"
+                @onclick="()=>scrollTop=0"></button>
+    }
+    <button class="toolkit-item oi oi-reload"
+            title="Reload"
+            @onclick="()=>this.virtualList?.RefreshAsync()"></button>
+</div>
 @code {
+    private float scrollTop;
+    private VirtualList<int> virtualList;
     private async ValueTask<IEnumerable<int>> LoadDataAsync()
     {
-        await Task.Delay(500);
+        await Task.Delay(200);
+
         var items = Enumerable
               .Range(0, 50)
               .Select(o => new Random().Next(120, 600));
@@ -92,8 +120,10 @@ PM> Install-Package Blazor.Virtualization
 <summary>3. GridListLayout</summary>
 
 ```razor
-<VirtualList TItem="int"
-             IncrementalItemsProvider="@this.LoadDataAsync">
+<VirtualList @ref="virtualList"
+             TItem="int"
+             ItemsProvider="@this.LoadDataAsync"
+             @bind-ScrollTop="scrollTop">
     <Layout>
         <GridListLayout VirtualList="context"
                         HorizontalSpacing="12"
@@ -104,8 +134,20 @@ PM> Install-Package Blazor.Virtualization
         <div style="height:100%;background-color:#aaccee;">@context</div>
     </ItemTemplate>
 </VirtualList>
-
+<div class="toolkit">
+    @if (scrollTop > 200)
+    {
+        <button class="toolkit-item oi oi-arrow-top"
+                title="Back to the top"
+                @onclick="()=>this.virtualList?.ScrollTopAsync()"></button>
+    }
+    <button class="toolkit-item oi oi-reload"
+            title="Reload"
+            @onclick="()=>this.virtualList?.RefreshAsync()"></button>
+</div>
 @code {
+    private float scrollTop;
+    private VirtualList<int> virtualList;
     private async ValueTask<IEnumerable<int>> LoadDataAsync()
     {
         await Task.Delay(300);
@@ -122,8 +164,10 @@ PM> Install-Package Blazor.Virtualization
 <summary>4. LindedFlowLayout</summary>
 
 ```razor
-<VirtualList TItem="int"
-             IncrementalItemsProvider="@this.LoadDataAsync">
+<VirtualList @ref="virtualList"
+             TItem="int"
+             ItemsProvider="@this.LoadDataAsync"
+             @bind-ScrollTop="scrollTop">
     <Layout>
         <LinedFlowLayout VirtualList="context"
                          HorizontalSpacing="8"
@@ -134,8 +178,21 @@ PM> Install-Package Blazor.Virtualization
         <div style="height:100%;background-color:#aaccee;">@context</div>
     </ItemTemplate>
 </VirtualList>
+<div class="toolkit">
+    @if (scrollTop > 200)
+    {
+        <button class="toolkit-item oi oi-arrow-top"
+                title="Back to the top"
+                @onclick="()=>this.virtualList?.ScrollTopAsync()"></button>
+    }
+    <button class="toolkit-item oi oi-reload"
+            title="Reload"
+            @onclick="()=>this.virtualList?.RefreshAsync()"></button>
+</div>
 
 @code {
+    private float scrollTop;
+    private VirtualList<int> virtualList;
     private async ValueTask<IEnumerable<int>> LoadDataAsync()
     {
         await Task.Delay(300);
@@ -148,18 +205,31 @@ PM> Install-Package Blazor.Virtualization
 ```
 </details>
 
-### API
-#### VirtualList
+## API
 
-| Name                     | Type                   | Default value | Description                                 |
-|--------------------------|------------------------|---------------|---------------------------------------------|
-| Items                    | IList<T>               | null          | The datasource.                             |
-| Layout                   | RenderFragment<TItem>  | null          | The list layout.                            |
-| EmptyTemplate            | RenderFragment         | null          | The template if no data.                    |
-| IncrementalItemsProvider | ValueTask<List<TItem>> | null          | The Incremental loading datasource provider |
+### VirtualList
 
-#### WaterafallLayout
+#### Properties
+| Name             | Type                   | Description                                 |
+|------------------|------------------------|---------------------------------------------|
+| EmptyTemplate    | RenderFragment         | The template if no data.                    |
+| Items            | IList<T>               | The datasource.                             |
+| ItemsProvider    | ValueTask<List<TItem>> | The Incremental loading datasource provider |
+| Layout           | RenderFragment<TItem>  | The list layout.                            |
+| ScrollTop        | float                  |                                             |
+| ScrollTopChanged | EventCallback<float>   |                                             |
 
+#### Methods
+| Name                 | Description                               |
+|----------------------|-------------------------------------------|
+| RefreshAsync()       | Refresh.                                  |
+| LoadMoreAsync()      | Load more data.                           |
+| ScrollToTopAsync()   | Scroll to top.                            |
+| ScrollToAsync(float) | Scroll the the position by the parameter. |
+
+### WaterafallLayout
+
+#### Properties
 | Name              | Type                      | Default value | Description                                                                                                                                                                              |
 |-------------------|---------------------------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ItemWidth         | float                     | 0             | If this value is greater than 0, then MinItemWidth will be invalid and all items will be centered.                                                                                       |
@@ -169,8 +239,9 @@ PM> Install-Package Blazor.Virtualization
 | MinItemWidth      | float                     | 200           | The minimum width of the item.                                                                                                                                                           |
 | MinColumnCount    | float                     | 1             | The minimum column count of the component.                                                                                                                                               |
 
-#### GridListLayout
+### GridListLayout
 
+#### Properties
 | Name              | Type  | Default value | Description                                                                                        |
 |-------------------|-------|---------------|----------------------------------------------------------------------------------------------------|
 | ItemWidth         | float | 0             | If this value is greater than 0, then MinItemWidth will be invalid and all items will be centered. |
@@ -180,8 +251,9 @@ PM> Install-Package Blazor.Virtualization
 | MinColumnCount    | float | 1             | The minimum column count of the component.                                                         |
 | ItemHeight        | float | 0             | The height of all the items. If the value is greater than 0, then the height will be equal to it.  |
 
-#### LinedFlowLayout
+### LinedFlowLayout
 
+#### Properties
 | Name              | Type               | Default value | Description                                                        |
 |-------------------|--------------------|---------------|--------------------------------------------------------------------|
 | HorizontalSpacing | float              | 8             | The horizontal spacing of items.                                   |

@@ -1,15 +1,13 @@
 ﻿namespace Blazor.Virtualization;
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Threading;
 
 public partial class VirtualList<TItem> : IVirtualList<TItem>
 {
     public bool NoMore { get; private set; }
 
-    public bool HasAny => this.Items?.Count > 0 || this.IncrementalItemsProvider != null;
+    public bool HasAny => this.Items?.Count > 0 || this.ItemsProvider != null;
 
     public bool IsLoading { get; private set; }
 
@@ -20,14 +18,19 @@ public partial class VirtualList<TItem> : IVirtualList<TItem>
         this.Adapter = new VirtualListAdapter<TItem>(this);
     }
 
-    public async Task ScrollTopAsync()
+    public Task ScrollTopAsync()
     {
-        await this.Adapter.OnScrollTop?.Invoke();
+        return this.Adapter.ScrollTo?.Invoke(0);
+    }
+
+    public Task ScrollToAsync(float top)
+    {
+        return this.Adapter.ScrollTo?.Invoke(top);
     }
 
     public async Task LoadMoreAsync()
     {
-        if (this.IncrementalItemsProvider == null)
+        if (this.ItemsProvider == null)
         {
             return;
         }
@@ -39,20 +42,19 @@ public partial class VirtualList<TItem> : IVirtualList<TItem>
     {
         await this.ScrollTopAsync();
         this.Items.Clear();
-        await this.Adapter.OnStateChanged(null, null, null);
+        await this.Adapter.StateChanged(null, null, null);
         await this.LoadMoreAsync();
     }
 
     internal async Task LoadMoreItemsAsync(bool first = false)
     {
-        if (this.IncrementalItemsProvider == null && this.IsLoading)
+        if (this.ItemsProvider == null && this.IsLoading)
         {
             return;
         }
 
-        Console.WriteLine("==========");
         this.IsLoading = true;
-        var result = await this.IncrementalItemsProvider();
+        var result = await this.ItemsProvider();
         try
         {
             if (result != null)
@@ -63,7 +65,7 @@ public partial class VirtualList<TItem> : IVirtualList<TItem>
                     this.Items.Add(item);
                 }
 
-                await this.Adapter.OnLoadedMore?.Invoke(new LoadedMoreArgs<TItem>
+                await this.Adapter.LoadedMore?.Invoke(new LoadedMoreArgs<TItem>
                 {
                     Items = result,
                     First = first,

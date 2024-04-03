@@ -15,7 +15,7 @@ PM> Install-Package Blazor.Virtualization
 ```
 ### 3 PackageReference
 ```xml
-<PackageReference Include="Blazor.Virtualization" Version="1.0.4" />
+<PackageReference Include="Blazor.Virtualization" Version="1.0.5" />
 ````
 
 ## Quick start

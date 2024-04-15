@@ -165,7 +165,7 @@ public partial class GridListLayout<TItem>
         this.height = 0;
         if (last != null)
         {
-            this.height = last.Top + last.VerticalSpacing;
+            this.height = last.Top + last.Height + last.VerticalSpacing;
         }
 
         await this.Adapter.StateChanged(

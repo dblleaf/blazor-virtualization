@@ -1,6 +1,7 @@
 ﻿namespace Blazor.Virtualization;
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 public partial class VirtualList<TItem> : IVirtualList<TItem>
@@ -48,7 +49,7 @@ public partial class VirtualList<TItem> : IVirtualList<TItem>
 
     internal async Task LoadMoreItemsAsync(bool first = false)
     {
-        if (this.ItemsProvider == null && this.IsLoading)
+        if (this.ItemsProvider == null && this.IsLoading && this.NoMore)
         {
             return;
         }
@@ -57,6 +58,12 @@ public partial class VirtualList<TItem> : IVirtualList<TItem>
         var result = await this.ItemsProvider();
         try
         {
+            if (result == null || !result.Any())
+            {
+                this.NoMore = true;
+                await this.Adapter.NoMore?.Invoke();
+            }
+
             if (result != null)
             {
                 this.Items ??= new List<TItem>();

@@ -17,6 +17,10 @@ public interface IVirtualListAdapter
 
     Func<float, Task> ScrollTo { get; set; }
 
+    Func<Task> NoMore { get; set; }
+
+    Func<Task> NoData { get; set; }
+
     Task LoadMoreAsync();
 
     Task ContentWidthChangeAsync(float contentWidth, bool firstCallback = false);

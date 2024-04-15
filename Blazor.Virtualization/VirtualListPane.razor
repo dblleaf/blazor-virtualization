@@ -23,3 +23,14 @@
         </div>
     }
 }
+@if (this.VirtualList.HasAny && this.VirtualList.NoMore)
+{
+    if (this.VirtualList.NoMoreTemplate != null)
+    {
+        @this.VirtualList.NoMoreTemplate
+    }
+    else
+    {
+        <div class="no-more">No more.</div>
+    }
+}

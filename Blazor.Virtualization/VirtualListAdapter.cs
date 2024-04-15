@@ -26,6 +26,10 @@ internal class VirtualListAdapter<T> : IVirtualListAdapter<T>
 
     public Func<LoadedMoreArgs<T>, Task> LoadedMore { get; set; }
 
+    public Func<Task> NoMore { get; set; }
+
+    public Func<Task> NoData { get; set; }
+
     public async Task ContentWidthChangeAsync(float contentWidth, bool firstCallback = false)
     {
         await this.ContentWidthChange?.Invoke(new ContentWidthChangeArgs

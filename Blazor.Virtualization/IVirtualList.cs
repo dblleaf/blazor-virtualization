@@ -16,6 +16,8 @@ public interface IVirtualList
 
     RenderFragment EmptyTemplate { get; set; }
 
+    RenderFragment NoMoreTemplate { get; set; }
+
     Task ScrollTopAsync();
 
     Task ScrollToAsync(float top);

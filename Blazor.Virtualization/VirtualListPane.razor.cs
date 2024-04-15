@@ -45,6 +45,9 @@ public partial class VirtualListPane : IAsyncDisposable
                 return Task.CompletedTask;
             };
 
+            this.Adapter.NoData = () => this.InvokeAsync(this.StateHasChanged);
+            this.Adapter.NoMore = () => this.InvokeAsync(this.StateHasChanged);
+
             this.Adapter.ScrollTo = async (top) =>
             {
                 await this.jsInterop.ScrollToAsync(top);

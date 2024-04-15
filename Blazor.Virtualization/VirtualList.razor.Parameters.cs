@@ -42,6 +42,9 @@ public partial class VirtualList<TItem>
         }
     }
 
+    [Parameter]
+    public RenderFragment NoMoreTemplate { get; set; }
+
     protected override void OnParametersSet()
     {
         if (this.scrollTopHasChanged)

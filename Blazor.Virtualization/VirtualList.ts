@@ -3,7 +3,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 import { DotNet } from '@microsoft/dotnet-js-interop';
 
-let scrollContainer: HTMLElement = null;
 const observersByDotNetId = {};
 
 const findClosestScrollContainer = (element: HTMLElement | null): HTMLElement | null => {
@@ -48,7 +47,7 @@ const invokeInit = (dotNetHelper: DotNet.DotNetObject, container: HTMLElement): 
 const init = (dotNetHelper: DotNet.DotNetObject, spacerBefore: HTMLElement, spacerAfter: HTMLElement) => {
   const container = spacerBefore.parentElement;
   invokeInit(dotNetHelper, container);
-  scrollContainer = findClosestScrollContainer(container);
+  const scrollContainer = findClosestScrollContainer(container);
 
   const intersectionObserver = new IntersectionObserver(intersectionCallback, {
     root: scrollContainer,
@@ -86,10 +85,11 @@ const init = (dotNetHelper: DotNet.DotNetObject, spacerBefore: HTMLElement, spac
       if (!entry.isIntersecting) {
         return;
       }
+
       const containerHeight = (scrollContainer || document.documentElement).clientHeight;
       const scrollTop = (scrollContainer || document.documentElement).scrollTop;
       const scrollHeight = (scrollContainer || document.documentElement).scrollHeight;
-
+      console.log((scrollContainer || document.documentElement));
       if (entry.target == spacerBefore) {
         dotNetHelper.invokeMethodAsync('OnSpacerBeforeVisible', scrollTop, containerHeight);
       } else if (entry.target == spacerAfter) {

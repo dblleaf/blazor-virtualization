@@ -21,12 +21,22 @@ public partial class VirtualList<TItem> : IVirtualList<TItem>
 
     public Task ScrollTopAsync()
     {
-        return this.Adapter.ScrollTo?.Invoke(0);
+        if (this.Adapter.ScrollTo != null)
+        {
+            return this.Adapter.ScrollTo?.Invoke(0);
+        }
+
+        return Task.CompletedTask;
     }
 
     public Task ScrollToAsync(float top)
     {
-        return this.Adapter.ScrollTo?.Invoke(top);
+        if (this.Adapter.ScrollTo != null)
+        {
+            return this.Adapter.ScrollTo?.Invoke(top);
+        }
+
+        return Task.CompletedTask;
     }
 
     public async Task LoadMoreAsync()
@@ -61,7 +71,11 @@ public partial class VirtualList<TItem> : IVirtualList<TItem>
             if (result == null || !result.Any())
             {
                 this.NoMore = true;
-                await this.Adapter.NoMore?.Invoke();
+
+                if (this.Adapter.NoMore != null)
+                {
+                    await this.Adapter.NoMore.Invoke();
+                }
             }
 
             if (result != null)
@@ -72,11 +86,14 @@ public partial class VirtualList<TItem> : IVirtualList<TItem>
                     this.Items.Add(item);
                 }
 
-                await this.Adapter.LoadedMore?.Invoke(new LoadedMoreArgs<TItem>
+                if (this.Adapter.LoadedMore != null)
                 {
-                    Items = result,
-                    First = first,
-                });
+                    await this.Adapter.LoadedMore.Invoke(new LoadedMoreArgs<TItem>
+                    {
+                        Items = result,
+                        First = first,
+                    });
+                }
             }
         }
         catch

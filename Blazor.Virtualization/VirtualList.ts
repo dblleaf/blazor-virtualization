@@ -89,7 +89,7 @@ const init = (dotNetHelper: DotNet.DotNetObject, spacerBefore: HTMLElement, spac
       const containerHeight = (scrollContainer || document.documentElement).clientHeight;
       const scrollTop = (scrollContainer || document.documentElement).scrollTop;
       const scrollHeight = (scrollContainer || document.documentElement).scrollHeight;
-      console.log((scrollContainer || document.documentElement));
+
       if (entry.target == spacerBefore) {
         dotNetHelper.invokeMethodAsync('OnSpacerBeforeVisible', scrollTop, containerHeight);
       } else if (entry.target == spacerAfter) {

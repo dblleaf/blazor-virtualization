@@ -69,7 +69,6 @@ const init = (dotNetHelper, spacerBefore, spacerAfter) => {
             const containerHeight = (scrollContainer || document.documentElement).clientHeight;
             const scrollTop = (scrollContainer || document.documentElement).scrollTop;
             const scrollHeight = (scrollContainer || document.documentElement).scrollHeight;
-            console.log((scrollContainer || document.documentElement));
             if (entry.target == spacerBefore) {
                 dotNetHelper.invokeMethodAsync('OnSpacerBeforeVisible', scrollTop, containerHeight);
             }

@@ -32,13 +32,16 @@ internal class VirtualListAdapter<T> : IVirtualListAdapter<T>
 
     public async Task ContentWidthChangeAsync(float contentWidth, bool firstCallback = false)
     {
-        await this.ContentWidthChange?.Invoke(new ContentWidthChangeArgs
+        if (this.ContentWidthChange != null)
         {
-            Value = contentWidth,
-            First = firstCallback,
-        });
+            await this.ContentWidthChange.Invoke(new ContentWidthChangeArgs
+            {
+                Value = contentWidth,
+                First = firstCallback,
+            });
+        }
 
-        if (firstCallback && this.virtualList.ItemsProvider != null)
+        if (firstCallback && this.virtualList != null && this.virtualList.ItemsProvider != null)
         {
             await this.virtualList.LoadMoreItemsAsync(firstCallback);
         }
@@ -51,12 +54,15 @@ internal class VirtualListAdapter<T> : IVirtualListAdapter<T>
             await this.virtualList.ScrollTopChanged.InvokeAsync(scrollTop);
         }
 
-        await this.SpacerAfterVisible?.Invoke(new SpacerVisibleArgs
+        if (this.SpacerAfterVisible != null)
         {
-            ScrollTop = scrollTop,
-            ClientHeight = clientHeight,
-            ScrollHeight = scrollheight,
-        });
+            await this.SpacerAfterVisible.Invoke(new SpacerVisibleArgs
+            {
+                ScrollTop = scrollTop,
+                ClientHeight = clientHeight,
+                ScrollHeight = scrollheight,
+            });
+        }
     }
 
     public async Task SpacerBeforeVisibleAsync(float scrollTop, float clientHeight)
@@ -66,11 +72,14 @@ internal class VirtualListAdapter<T> : IVirtualListAdapter<T>
             await this.virtualList.ScrollTopChanged.InvokeAsync(scrollTop);
         }
 
-        await this.SpacerBeforeVisible?.Invoke(new SpacerVisibleArgs
+        if (this.SpacerBeforeVisible != null)
         {
-            ScrollTop = scrollTop,
-            ClientHeight = clientHeight,
-        });
+            await this.SpacerBeforeVisible.Invoke(new SpacerVisibleArgs
+            {
+                ScrollTop = scrollTop,
+                ClientHeight = clientHeight,
+            });
+        }
     }
 
     public Task LoadMoreAsync()

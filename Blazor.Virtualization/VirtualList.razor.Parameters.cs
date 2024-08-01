@@ -57,6 +57,11 @@ public partial class VirtualList<TItem>
 
     private Task OnScrollTopChangeAsync(float top)
     {
-        return this.Adapter.ScrollTo?.Invoke(top);
+        if (this.Adapter.ScrollTo != null)
+        {
+            return this.Adapter.ScrollTo.Invoke(top);
+        }
+
+        return Task.CompletedTask;
     }
 }

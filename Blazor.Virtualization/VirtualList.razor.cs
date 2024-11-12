@@ -52,7 +52,7 @@ public partial class VirtualList<TItem> : IVirtualList<TItem>
     public async Task RefreshAsync()
     {
         await this.ScrollTopAsync();
-        this.Items.Clear();
+        this.Items?.Clear();
         await this.Adapter.StateChanged(null, null, null);
         await this.LoadMoreAsync();
     }

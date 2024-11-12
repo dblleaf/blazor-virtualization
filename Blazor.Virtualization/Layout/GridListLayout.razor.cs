@@ -251,7 +251,7 @@ public partial class GridListLayout<TItem>
 
         if (cWidth > this.MinItemWidth * 2)
         {
-            var count = Convert.ToInt32(Math.Floor(cWidth / itemWidth));
+            var count = Convert.ToInt32(Math.Floor(cWidth / (itemWidth + this.HorizontalSpacing)));
 
             return count;
         }
